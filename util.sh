@@ -14,7 +14,92 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# check for command in path
-in_path () {
-    hash "$@" > /dev/null 2>&1
+_pypvutil_err () {
+    _pypvutil_diag "ERROR: " "$@"
+}
+
+_pypvutil_warn () {
+    _pypvutil_diag "WARNING: " "$@"
+}
+
+_pypvutil_diag () {
+    # Print diagnostic output.
+    #
+    # Available values for diag_style:
+    # - "short" (the default) just prints the diagnostic string
+    # - "long" surrounds it with blank lines
+    # - "usage_diag" prints the usage string, then a blank line, then the
+    #   diagnostic string
+    # - "usage_only" prints only the usage string (pass "" for the diag_prefix
+    #   and diag_string)
+
+    diag_prefix="$1"
+    diag_string="$2"
+    diag_style="$3"
+    usage_string="$4"
+
+    if [ -z "$diag_prefix" ]; then
+        echo "WARNING: No diag prefix given to _pypvutil_diag()." 1>&2
+    fi
+    if [ -z "$diag_string" ]; then
+        echo "WARNING: No diag string given to _pypvutil_diag()." 1>&2
+    fi
+    if [ -z "$diag_style" ]; then
+        echo "WARNING: No diag style given to _pypvutil_diag()." 1>&2
+    fi
+    if [ "$diag_style" = "usage" ] && [ -z "$usage_string" ]; then
+        echo "WARNING: No usage string given to _pypvutil_diag()." 1>&2
+    fi
+
+    if [ "$diag_style" = "usage" ]; then
+        printf "%s\n" "$usage_string" 1>&2
+        echo 1>&2
+    fi
+    [ "$diag_style" = "long" ] && echo 1>&2
+    printf "%s\n" "${diag_prefix}${diag_string}" 1>&2
+    [ "$diag_style" = "long" ] && echo 1>&2
+}
+
+_pypvutil_create_alias () {
+    function_shortname="$1"
+    function_fullname="$2"
+    completion_function="$3"
+
+    if [ -z "$PYPVUTIL_PREFIX" ]; then
+        return 0
+    fi
+    if [ -z "$function_shortname" ]; then
+        _pypvutil_err "ERROR: No function shortname given to create_alias()." \
+            short
+        return 1
+    fi
+    if [ -z "$function_fullname" ]; then
+        _pypvutil_err "ERROR: No function fullname given to create_alias()." \
+            short
+        return 1
+    fi
+
+    # shellcheck disable=SC2139
+    alias "${PYPVUTIL_PREFIX}${function_shortname}=$function_fullname"
+    if [ -n "$completion_function" ]; then
+        complete -o -F "$completion_function" \
+            "${PYPVUTIL_PREFIX}${function_shortname}"
+    fi
+}
+
+_pypvutil_get_cmd_name () {
+    function_shortname="$1"
+
+    if [ -z "$function_shortname" ]; then
+        _pypvutil_err \
+"ERROR: No function shortname given to _pypvutil_get_cmd_name()." short
+        echo "CMD_NAME"
+        return 1
+    fi
+
+    if [ -n "$PYPVUTIL_PREFIX" ]; then
+        printf "%s\n" "${PYPVUTIL_PREFIX}${function_shortname}"
+    else
+        printf "%s\n" "pypv${function_shortname}"
+    fi
 }

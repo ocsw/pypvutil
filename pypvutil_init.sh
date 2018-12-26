@@ -15,19 +15,15 @@
 # limitations under the License.
 
 if [ -z "$PYPVUTIL_HOME" ]; then
-    echo
-    echo "ERROR: $PYPVUTIL_HOME is unset."
-    echo
+    echo "ERROR: PYPVUTIL_HOME is unset." 1>&2
     return 1
 fi
 if [ ! -d "$PYPVUTIL_HOME" ]; then
-    echo
-    echo "ERROR: $PYPVUTIL_HOME is not a directory."
-    echo
+    echo "ERROR: PYPVUTIL_HOME is not a directory." 1>&2
     return 1
 fi
 
-for i in get_current completions set_current create update delete; do
+for i in util get_current completions set_current create update delete; do
     # shellcheck disable=SC1090
     . "${PYPVUTIL_HOME}/${i}.sh"
 done
