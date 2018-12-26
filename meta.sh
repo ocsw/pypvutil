@@ -14,6 +14,11 @@ _python_venv_prompt () {
     fi
 }
 
+# check for command in path
+in_path () {
+    hash "$@" > /dev/null 2>&1
+}
+
 if in_path pip ||
         in_path pip2 ||
         in_path pip3; then
