@@ -58,6 +58,10 @@ _pypvutil_diag () {
     [ "$diag_style" = "long" ] && echo 1>&2
     printf "%s\n" "${diag_prefix}${diag_string}" 1>&2
     [ "$diag_style" = "long" ] && echo 1>&2
+
+    # explicitly return 0 so we are guaranteed to be able to do
+    # _pypvutil_diag foo short && return 1
+    return 0
 }
 
 _pypvutil_create_alias () {
@@ -70,13 +74,11 @@ _pypvutil_create_alias () {
     fi
     if [ -z "$function_shortname" ]; then
         _pypvutil_err "ERROR: No function shortname given to create_alias()." \
-            short
-        return 1
+            short && return 1
     fi
     if [ -z "$function_fullname" ]; then
         _pypvutil_err "ERROR: No function fullname given to create_alias()." \
-            short
-        return 1
+            short && return 1
     fi
 
     # shellcheck disable=SC2139
