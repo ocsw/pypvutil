@@ -60,7 +60,7 @@ _pypvutil_diag () {
     [ "$diag_style" = "long" ] && echo 1>&2
 
     # explicitly return 0 so we are guaranteed to be able to do
-    # '_pypvutil_diag foo short && return 1'
+    # '! cmd && _pypvutil_diag foo short && return 1'
     return 0
 }
 
