@@ -60,7 +60,7 @@ _pypvutil_diag () {
     [ "$diag_style" = "long" ] && echo 1>&2
 
     # explicitly return 0 so we are guaranteed to be able to do
-    # _pypvutil_diag foo short && return 1
+    # '_pypvutil_diag foo short && return 1'
     return 0
 }
 
@@ -102,6 +102,6 @@ _pypvutil_get_cmd_name () {
     if [ -n "$PYPVUTIL_PREFIX" ]; then
         printf "%s\n" "${PYPVUTIL_PREFIX}${function_shortname}"
     else
-        printf "%s\n" "pypv${function_shortname}"
+        printf "%s\n" "pypvutil_${function_shortname}"
     fi
 }
