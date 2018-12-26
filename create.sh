@@ -151,7 +151,6 @@ _pyvenv () {
     local py_version="$2"
     local project_dir="$3"
     local full_name
-    local i
 
     if [ -z "$short_name" ]; then
         cat <<EOF

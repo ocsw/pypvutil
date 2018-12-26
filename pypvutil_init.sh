@@ -14,5 +14,6 @@ if [ ! -d "$PYPVUTIL_HOME" ]; then
 fi
 
 for i in get_current completions set_current create update delete; do
+    # shellcheck disable=SC1090
     . "${PYPVUTIL_HOME}/${i}.sh"
 done
