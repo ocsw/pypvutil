@@ -28,3 +28,35 @@ If you'd like to make the commands start with something other than `pypvutil_`:
 
 * Configure (see above)
 * Source `pypvutil_init.sh`
+
+pyact
+pyglobal
+pybase
+pyutil_wrapper
+pyfix
+pyfix_all
+pyvenv
+pybin_dir
+pybin_ls
+pyln
+pyinst
+pycopy
+pycur
+pycur_is_global
+pycur_is_venv
+pycur_is_dotfile
+pybases_available
+pybases_installed
+pyvenvs
+pyname_is_global
+pyname_is_venv
+pylatest
+py3latest
+py2latest
+pylatest_local
+py3latest_local
+py2latest_local
+pyvenv_version
+pyrm
+pyreqs
+pypipcopy
