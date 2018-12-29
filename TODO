@@ -2,6 +2,7 @@ test util
 apply util - diag, aliasing
 names - _pypvutil
 names - _ to -
+single bin?
 
 base upgrade
 pyrecreate w/diff ver/name

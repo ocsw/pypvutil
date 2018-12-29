@@ -69,7 +69,7 @@ _pyreqs () {
 
 _pyreqs_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     fi
 }
 complete -o default -F _pyreqs_complete pyreqs
@@ -142,9 +142,9 @@ _pypipcopy () {
     rm -rf "$reqs_file"
 }
 
-_pypipcopy_complete () {
+_pypvutil_pipcopy_complete () {
     if [ "$COMP_CWORD" = "1" ] || [ "$COMP_CWORD" = "2" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     fi
 }
-complete -o default -F _pypipcopy_complete pypipcopy
+complete -o default -F _pypvutil_pipcopy_complete pypipcopy

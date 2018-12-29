@@ -22,11 +22,11 @@ pycur () {
     printf "%s\n" "$(pyenv version | sed 's/ (.*$//')"
 }
 
-pycur_is_global() {
+pycur_is_global () {
     [ -z "$PYENV_VERSION" ] && [ -z "$PYENV_VIRTUAL_ENV" ]
 }
 
-pycur_is_venv() {
+pycur_is_venv () {
     [ -n "$PYENV_VERSION" ] && [ -n "$PYENV_VIRTUAL_ENV" ]
 }
 
@@ -149,7 +149,7 @@ pyvenv_version () {
 
 _pyvenv_version_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     fi
 }
 complete -o default -F _pyvenv_version_complete pyvenv_version

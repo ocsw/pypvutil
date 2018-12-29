@@ -43,8 +43,8 @@ EOF
 
 _pybase_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_base_complete pybases_available
-        _py_latest_complete add
+        _pypvutil_base_complete pybases_available
+        _pypvutil_latest_complete add
     fi
 }
 complete -o default -F _pybase_complete pybase
@@ -139,7 +139,7 @@ EOF
 
 _pyfix_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     fi
 }
 complete -o default -F _pyfix_complete pyfix
@@ -220,8 +220,8 @@ EOF
 
 _pyvenv_complete () {
     if [ "$COMP_CWORD" = "2" ]; then
-        _py_base_complete pybases_installed
-        _py_latest_complete add
+        _pypvutil_base_complete pybases_installed
+        _pypvutil_latest_complete add
     fi
 }
 complete -o default -F _pyvenv_complete pyvenv
@@ -240,7 +240,7 @@ pybin_dir () {
 
 _pybin_dir_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     fi
 }
 complete -o default -F _pybin_dir_complete pybin_dir
@@ -259,7 +259,7 @@ pybin_ls () {
 
 _pybin_ls_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     fi
 }
 complete -o default -F _pybin_ls_complete pybin_ls
@@ -315,7 +315,7 @@ EOF
 
 _pyln_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     elif [ "$COMP_CWORD" = "2" ]; then
     while read -r line; do
         COMPREPLY+=("$line")
@@ -402,8 +402,8 @@ EOF
 
 _pyinst_complete () {
     if [ "$COMP_CWORD" = "2" ]; then
-        _py_base_complete pybases_installed
-        _py_latest_complete add
+        _pypvutil_base_complete pybases_installed
+        _pypvutil_latest_complete add
     fi
 }
 complete -o default -F _pyinst_complete pyinst
@@ -470,13 +470,13 @@ EOF
     pypipcopy "$source_venv" "$target_long_name"
 }
 
-_pycopy_complete () {
+_pycopypvutil_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     fi
     if [ "$COMP_CWORD" = "3" ]; then
-        _py_base_complete pybases_installed
-        _py_latest_complete add
+        _pypvutil_base_complete pybases_installed
+        _pypvutil_latest_complete add
     fi
 }
-complete -o default -F _pycopy_complete pycopy
+complete -o default -F _pycopypvutil_complete pycopy

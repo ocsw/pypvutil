@@ -36,7 +36,7 @@ EOF
 
 _pyact_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _py_venv_complete
+        _pypvutil_venv_complete
     fi
 }
 complete -o default -F _pyact_complete pyact
@@ -54,7 +54,7 @@ _pyglobal_complete () {
         if [[ "system" =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
             COMPREPLY=("system")
         fi
-        _py_all_complete all
+        _pypvutil_all_complete all
     fi
 }
 complete -o default -F _pyglobal_complete pyglobal

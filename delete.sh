@@ -30,7 +30,7 @@ _pyrm_complete () {
         if [[ "--force" =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
             COMPREPLY+=("--force")
         fi
-        _py_all_complete add
+        _pypvutil_all_complete add
     fi
 }
 complete -o default -F _pyrm_complete pyrm
