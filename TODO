@@ -1,9 +1,12 @@
+fix PYLN default
+
 test util
 apply util - diag, aliasing
 names - _pypvutil
 names - _ to -
 single bin?
 
+latest 3.6
 base upgrade
 pyrecreate w/diff ver/name
 pylast
