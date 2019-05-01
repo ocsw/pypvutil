@@ -22,6 +22,16 @@ if [ ! -d "$PYPVUTIL_HOME" ]; then
     echo "ERROR: PYPVUTIL_HOME is not a directory." 1>&2
     return 1
 fi
+# in case it was only a shell variable; probably not necessary, but it'll
+# protect against errors involving subshells
+export PYPVUTIL_HOME
+
+export PYPVUTIL_LN_DIR_DEFAULT="${HOME}/bin"
+export PYPVUTIL_LN_DIR_DEFAULT_STR="\$HOME/bin"
+if [ -z "$PYPVUTIL_LN_DIR" ]; then
+    PYPVUTIL_LN_DIR="$PYPVUTIL_LN_DIR_DEFAULT"
+fi
+export PYPVUTIL_LN_DIR
 
 for i in util get_current completions set_current create update delete; do
     # shellcheck disable=SC1090

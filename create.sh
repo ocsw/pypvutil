@@ -273,9 +273,13 @@ pyln () {
 
     if [ -z "$venv" ]; then
         cat <<EOF
-Usage: pyln VIRTUALENV EXECUTABLE TARGET_DIR
-If TARGET_DIR is omitted, it defaults to the value of the PYLN_DIR environment
-variable; if that is unset, it defaults to \$HOME/bin.
+Usage:
+[export PYPVUTIL_LN_DIR=SYMLINK_TARGET_DIR]
+pyln VIRTUALENV EXECUTABLE [TARGET_DIR]
+
+If TARGET_DIR is omitted, it defaults to the value of the PYPVUTIL_LN_DIR
+environment variable; if that is unset, it defaults to \
+$PYPVUTIL_LN_DIR_DEFAULT_STR.
 
 ERROR: No virtualenv given.
 EOF
@@ -286,10 +290,10 @@ EOF
         return 1
     fi
     if [ -z "$target_dir" ]; then
-        if [ -n "$PYLN_DIR" ]; then
-            target_dir="$PYLN_DIR"
+        if [ -n "$PYPVUTIL_LN_DIR" ]; then
+            target_dir="$PYPVUTIL_LN_DIR"
         else
-            target_dir="${HOME}/bin"
+            target_dir="$PYPVUTIL_LN_DIR_DEFAULT"
         fi
     fi
     if ! [ -d "$target_dir" ]; then
@@ -332,7 +336,7 @@ pyinst () {
     # specifically for a Python-based utility
 
     # to remove the virtualenv:
-    #rm PYLN_DIR/EXECUTABLE
+    #rm "${PYPVUTIL_LN_DIR}/EXECUTABLE"
     #pyenv uninstall $package_name-$py_version
 
     pyutil_wrapper _pyinst "$@"
@@ -344,14 +348,18 @@ _pyinst () {
     local package_path="$3"
     local full_name
     local install_string
-    local pyln_dir_string
+    local ln_dir_string
 
     if [ -z "$package_name" ]; then
         cat <<EOF
-Usage: PYLN_DIR=SYMLINK_TARGET_DIR pyinst PACKAGE_NAME PY_VERSION [PACKAGE_PATH]
+Usage:
+[export PYPVUTIL_LN_DIR=SYMLINK_TARGET_DIR]
+pyinst PACKAGE_NAME PY_VERSION [PACKAGE_PATH]
+
 If PY_VERSION is 2 or 3, the latest installed Python release with that major
 version will be used.
-If PYLN_DIR is not set, SYMLINK_TARGET_DIR defaults to \$HOME/bin.
+If PYPVUTIL_LN_DIR is not set, SYMLINK_TARGET_DIR defaults to \
+$PYPVUTIL_LN_DIR_DEFAULT_STR.
 
 ERROR: No package name given.
 EOF
@@ -384,16 +392,17 @@ EOF
         return 1
     fi
     if [ -e "$(pybin_dir "${full_name}")/${package_name}" ]; then
-        pyln "${full_name}" "${package_name}" "$PYLN_DIR"
+        pyln "${full_name}" "${package_name}"
     fi
-    pyln_dir_string=""
-    if [ -n "$PYLN_DIR" ]; then
-        pyln_dir_string=" \"$PYLN_DIR\""
+    ln_dir_string=""
+    # value for this invocation
+    if [ -n "$PYPVUTIL_LN_DIR" ]; then
+        ln_dir_string=" \"$PYPVUTIL_LN_DIR\""
     fi
     cat <<EOF
 
 To symlink other executables:
-pyln "${full_name}" "EXECUTABLE"$pyln_dir_string
+pyln "${full_name}" "EXECUTABLE"$ln_dir_string
 
 EOF
 
