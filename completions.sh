@@ -18,7 +18,7 @@
 # completions #
 ###############
 
-_pypvutil_base_complete () {
+_pypvutil_base_completions () {
     local ver_func="$1"
     local add="$2"
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
@@ -32,7 +32,7 @@ _pypvutil_base_complete () {
     [ -n "$line" ] && COMPREPLY+=("$line")
 }
 
-_pypvutil_latest_complete () {
+_pypvutil_latest_completions () {
     local add="$1"
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ -z "$add" ]; then
@@ -48,7 +48,7 @@ _pypvutil_latest_complete () {
     fi
 }
 
-_pypvutil_venv_complete () {
+_pypvutil_venv_completions () {
     local add="$1"
     if [ -z "$add" ]; then
         # seems to not be necessary, but just in case...
@@ -57,17 +57,17 @@ _pypvutil_venv_complete () {
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     while read -r line; do
         COMPREPLY+=("$line")
-    done < <(pyvenvs | grep "^${cur_word}")
+    done < <(pypvutil_venvs | grep "^${cur_word}")
     [ -n "$line" ] && COMPREPLY+=("$line")
 }
 
-_pypvutil_all_complete () {
+_pypvutil_all_completions () {
     local add="$1"
     if [ -z "$add" ]; then
         # seems to not be necessary, but just in case...
         COMPREPLY=()
     fi
-    # bases first, for pyglobal
-    _pypvutil_base_complete pybases_installed add
-    _pypvutil_venv_complete add
+    # bases first, for pypvutil_global
+    _pypvutil_base_completions pypvutil_bases_installed add
+    _pypvutil_venv_completions add
 }

@@ -19,18 +19,19 @@
 ##########
 
 # wrap 'pyenv uninstall' for convenience, preserving autocomplete
-pyrm () {
+pypvutil_rm () {
     pyenv uninstall "$@"
 }
 
-_pyrm_complete () {
+_pypvutil_rm_complete () {
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ "$COMP_CWORD" = "1" ] || [ "$COMP_CWORD" = "2" ]; then
         COMPREPLY=()
         if [[ "--force" =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
             COMPREPLY+=("--force")
         fi
-        _pypvutil_all_complete add
+        _pypvutil_all_completions add
     fi
 }
-complete -o default -F _pyrm_complete pyrm
+complete -o default -F _pypvutil_rm_complete pypvutil_rm
+_pypvutil_create_alias "rm" "yes"

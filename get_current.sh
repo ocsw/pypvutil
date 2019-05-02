@@ -18,71 +18,90 @@
 # get current state #
 #####################
 
-pycur () {
+pypvutil_cur () {
     printf "%s\n" "$(pyenv version | sed 's/ (.*$//')"
 }
+_pypvutil_create_alias "cur" "no"
 
-pycur_is_global () {
+pypvutil_cur_is_global () {
     [ -z "$PYENV_VERSION" ] && [ -z "$PYENV_VIRTUAL_ENV" ]
 }
+_pypvutil_create_alias "cur_is_global" "no"
 
-pycur_is_venv () {
+pypvutil_cur_is_venv () {
     [ -n "$PYENV_VERSION" ] && [ -n "$PYENV_VIRTUAL_ENV" ]
 }
+_pypvutil_create_alias "cur_is_venv" "no"
 
-pycur_is_dotfile () {
+pypvutil_cur_is_dotfile () {
     [ -z "$PYENV_VERSION" ] && [ -n "$PYENV_VIRTUAL_ENV" ]
 }
+_pypvutil_create_alias "cur_is_dotfile" "no"
 
-pybases_available () {
+
+pypvutil_bases_available () {
     pyenv install --list | tail -n +2 | sed 's/^..//'
 }
+_pypvutil_create_alias "bases_available" "no"
 
-pybases_installed () {
+pypvutil_bases_installed () {
     # see:
     # https://unix.stackexchange.com/questions/275637/limit-posix-find-to-specific-depth
     find "${PYENV_ROOT}/versions/." ! -name . -prune -type d | \
         sed "s|^${PYENV_ROOT}/versions/\./||"
 }
+_pypvutil_create_alias "bases_installed" "no"
 
-pyvenvs () {
+
+pypvutil_venvs () {
     pyenv virtualenvs | sed -e 's/^..//' -e 's/ (.*$//' | \
         grep -v "/envs/"
 }
+_pypvutil_create_alias "venvs" "no"
 
-pyname_is_global () {
+
+pypvutil_name_is_global () {
+    local cmd_name
     local name="$1"
     if [ -z "$name" ]; then
-        echo "Usage: pyname_is_global NAME"
+        cmd_name=$(_pypvutil_get_cmd_name "name_is_global")
+        echo "Usage: $cmd_name NAME"
         echo
         echo "ERROR: No name given."
         return 1
     fi
-    pybases_installed | grep "^${name}\$" > /dev/null 2>&1
+    pypvutil_bases_installed | grep "^${name}\$" > /dev/null 2>&1
 }
+_pypvutil_create_alias "name_is_global" "no"
 
 pyname_is_venv () {
+    local cmd_name
     local name="$1"
     if [ -z "$name" ]; then
-        echo "Usage: pyname_is_venv NAME"
+        cmd_name=$(_pypvutil_get_cmd_name "name_is_venv")
+        echo "Usage: $cmd_name NAME"
         echo
         echo "ERROR: No name given."
         return 1
     fi
-    pyvenvs | grep "^${name}\$" > /dev/null 2>&1
+    pypvutil_venvs | grep "^${name}\$" > /dev/null 2>&1
 }
+_pypvutil_create_alias "name_is_venv" "no"
 
-pylatest () {
+
+pypvutil_latest () {
     # get the latest available (or latest locally installed) version of
     # Python for a specified major version in pyenv
+    local cmd_name
     local major_version="$1"
     local installed_only="$2"
     local versions ver
 
     if [ -n "$major_version" ] && [ "$major_version" != "2" ] && \
             [ "$major_version" != "3" ]; then
+        cmd_name=$(_pypvutil_get_cmd_name "latest")
         cat <<EOF
-Usage: pylatest [MAJOR_PY_VERSION] [INSTALLED_ONLY]
+Usage: $cmd_name [MAJOR_PY_VERSION] [INSTALLED_ONLY]
 MAJOR_PY_VERSION defaults to 3.
 If INSTALLED_ONLY is given, only installed pyenv base versions will be
 examined.
@@ -114,19 +133,20 @@ EOF
     return 1
 }
 
-# don't use aliases so no other args will be passed
-py3latest () { pylatest 3; }
-py2latest () { pylatest 2; }
-pylatest_local () { pylatest "$1" "installed_only"; }
-py3latest_local () { pylatest_local 3; }
-py2latest_local () { pylatest_local 2; }
+pypvutil_latest_local () { pypvutil_latest "$1" "installed_only"; }
 
-pyvenv_version () {
+_pypvutil_create_alias "latest" "no"
+_pypvutil_create_alias "latest_local" "no"
+
+
+pypvutil_venv_version () {
     # get the version of a virtualenv; don't rely on the name
+    local cmd_name
     local venv="$1"
     local py_version
     if [ -z "$venv" ]; then
-        echo "Usage: pyvenv_version VIRTUALENV"
+        cmd_name=$(_pypvutil_get_cmd_name "venv_version")
+        echo "Usage: $cmd_name VIRTUALENV"
         echo
         echo "ERROR: No virtualenv given."
         return 1
@@ -147,9 +167,10 @@ pyvenv_version () {
     printf "%s\n" "$py_version"
 }
 
-_pyvenv_version_complete () {
+_pypvutil_venv_version_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     fi
 }
-complete -o default -F _pyvenv_version_complete pyvenv_version
+complete -o default -F _pypvutil_venv_version_complete pypvutil_venv_version
+_pypvutil_create_alias "venv_version" "yes"

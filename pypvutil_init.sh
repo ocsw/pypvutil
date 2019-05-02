@@ -33,6 +33,8 @@ if [ -z "$PYPVUTIL_LN_DIR" ]; then
 fi
 export PYPVUTIL_LN_DIR
 
+export PYPVUTIL_PREFIX
+
 for i in util get_current completions set_current create update delete; do
     # shellcheck disable=SC1090
     . "${PYPVUTIL_HOME}/${i}.sh"

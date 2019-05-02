@@ -18,13 +18,13 @@
 # set current state #
 #####################
 
-pyact () {
+pypvutil_act () {
     local venv="$1"
     if [ -n "$venv" ]; then
         pyenv activate "$venv"
     else
         pyenv deactivate || return "$?"
-        if [ "$(pyenv global)" != "$(pycur)" ]; then
+        if [ "$(pyenv global)" != "$(pypvutil_cur)" ]; then
             cat <<EOF
 WARNING: Global env was set but isn't active; are you in a directory with a
 .python-version file?
@@ -34,27 +34,30 @@ EOF
     fi
 }
 
-_pyact_complete () {
+_pypvutil_act_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     fi
 }
-complete -o default -F _pyact_complete pyact
+complete -o default -F _pypvutil_act_complete pypvutil_act
+_pypvutil_create_alias "act" "yes"
+
 
 # wrap 'pyenv global' for convenience, preserving autocomplete
-pyglobal () {
+pypvutil_global () {
     local env="$1"  # base or venv
     pyenv global "$env"  # if empty, just prints current
 }
 
-_pyglobal_complete () {
+_pypvutil_global_complete () {
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ "$COMP_CWORD" = "1" ]; then
         COMPREPLY=()
         if [[ "system" =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
             COMPREPLY=("system")
         fi
-        _pypvutil_all_complete all
+        _pypvutil_all_completions all
     fi
 }
-complete -o default -F _pyglobal_complete pyglobal
+complete -o default -F _pypvutil_global_complete pypvutil_global
+_pypvutil_create_alias "global" "yes"

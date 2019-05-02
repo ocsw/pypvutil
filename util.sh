@@ -66,8 +66,7 @@ _pypvutil_diag () {
 
 _pypvutil_create_alias () {
     function_shortname="$1"
-    function_fullname="$2"
-    completion_function="$3"
+    alias_completion="$2"
 
     if [ -z "$PYPVUTIL_PREFIX" ]; then
         return 0
@@ -76,15 +75,17 @@ _pypvutil_create_alias () {
         _pypvutil_err "ERROR: No function shortname given to create_alias()." \
             short && return 1
     fi
-    if [ -z "$function_fullname" ]; then
-        _pypvutil_err "ERROR: No function fullname given to create_alias()." \
-            short && return 1
+
+    function_fullname="pypvutil_${function_shortname}"
+    completion_function=""
+    if [ "$alias_completion" = "yes" ]; then
+        completion_function="_${function_fullname}_complete"
     fi
 
     # shellcheck disable=SC2139
     alias "${PYPVUTIL_PREFIX}${function_shortname}=$function_fullname"
     if [ -n "$completion_function" ]; then
-        complete -o -F "$completion_function" \
+        complete -o default -F "$completion_function" \
             "${PYPVUTIL_PREFIX}${function_shortname}"
     fi
 }

@@ -18,14 +18,16 @@
 # install / create #
 ####################
 
-pybase () {
+pypvutil_base () {
     # install a version of Python in pyenv
+    local cmd_name
     local cflags_add="-O2"
     local py_version="$1"
 
     if [ -z "$py_version" ]; then
+        cmd_name=$(_pypvutil_get_cmd_name "base")
         cat <<EOF
-Usage: pybase PY_VERSION [PYENV_INSTALL_ARGS]
+Usage: $cmd_name PY_VERSION [PYENV_INSTALL_ARGS]
 If PY_VERSION is 2 or 3, the latest available Python release with that major
 version will be used.
 
@@ -34,44 +36,49 @@ EOF
         return 1
     fi
     if [ "$py_version" = "2" ] || [ "$py_version" = "3" ]; then
-        py_version=$(pylatest "$py_version")
+        py_version=$(pypvutil_latest "$py_version")
     fi
     shift
 
     CFLAGS="$cflags_add $CFLAGS" pyenv install "$@" "$py_version"
 }
 
-_pybase_complete () {
+_pypvutil_base_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_base_complete pybases_available
-        _pypvutil_latest_complete add
+        _pypvutil_base_completions pypvutil_bases_available
+        _pypvutil_latest_completions add
     fi
 }
-complete -o default -F _pybase_complete pybase
+complete -o default -F _pypvutil_base_complete pypvutil_base
+_pypvutil_create_alias "base" "yes"
 
 
-pyutil_wrapper () {
+pypvutil_wrapper () {
     # clean up after the Python helpers, below
+    local cmd_name
     local wrapped="$1"
+    local prev_wd="$PWD"
+    local prev_venv
+    local global_env
+    local retval
+
     if [ -z "$wrapped" ]; then
-        echo "Usage: pyutil_wrapper COMMAND [ARGS]"
+        cmd_name=$(_pypvutil_get_cmd_name "wrapper")
+        echo "Usage: $cmd_name COMMAND [ARGS]"
         echo
         echo "ERROR: No command given."
         return 1
     fi
 
     shift
-    local prev_wd="$PWD"
-    local prev_venv
-    local global_env
-    local retval
-    prev_venv=$(pycur)
+
+    prev_venv=$(pypvutil_cur)
 
     "$wrapped" "$@"
     retval="$?"
 
     cd "$prev_wd" || true  # ignore failure
-    if [ "$(pycur)" != "$prev_venv" ]; then
+    if [ "$(pypvutil_cur)" != "$prev_venv" ]; then
         global_env=$(pyenv global)
         if [ "$prev_venv" != "$global_env" ]; then
             pyenv activate "$prev_venv"
@@ -83,26 +90,30 @@ pyutil_wrapper () {
     return "$retval"
 }
 
+_pypvutil_create_alias "wrapper" "no"
 
-pyfix () {
+
+pypvutil_fix () {
     # fix a couple of things in a virtualenv that don't seem to come out
     # right by default
-    pyutil_wrapper _pyfix "$@"
+    pypvutil_wrapper _pypvutil_fix "$@"
 }
 
-_pyfix () {
+_pypvutil_fix () {
+    local cmd_name
     local venv="$1"
     local py_version
     local major
     local major_minor
 
     if [ -z "$venv" ]; then
-        echo "Usage: pyfix VIRTUALENV"
+        cmd_name=$(_pypvutil_get_cmd_name "fix")
+        echo "Usage: $cmd_name VIRTUALENV"
         echo
         echo "ERROR: No virtualenv given."
         return 1
     fi
-    if ! pyvenvs | grep "^$venv\$" > /dev/null 2>&1; then
+    if ! pypvutil_venvs | grep "^$venv\$" > /dev/null 2>&1; then
         echo "ERROR: \"$venv\" is not a valid virtualenv."
         return 1
     fi
@@ -137,38 +148,43 @@ EOF
     pip install --upgrade pip
 }
 
-_pyfix_complete () {
+_pypvutil_fix_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     fi
 }
-complete -o default -F _pyfix_complete pyfix
+complete -o default -F _pypvutil_fix_complete pypvutil_fix
+_pypvutil_create_alias "fix" "yes"
 
-pyfix_all () {
+pypvutil_fix_all () {
     local venv
-    for venv in $(pyvenvs); do
+    for venv in $(pypvutil_venvs); do
         echo "Fixing virtualenv \"$venv\"..."
-        pyfix "$venv"
+        pypvutil_fix "$venv"
     done
     echo "Done."
 }
 
+_pypvutil_create_alias "fix_all" "no"
 
-pyvenv () {
+
+pypvutil_venv () {
     # create a pyenv-virtualenv virtualenv with a bunch of tweaks and
     # installs
-    pyutil_wrapper _pyvenv "$@"
+    pypvutil_wrapper _pypvutil_venv "$@"
 }
 
-_pyvenv () {
+_pypvutil_venv () {
+    local cmd_name
     local short_name="$1"
     local py_version="$2"
     local project_dir="$3"
     local full_name
 
     if [ -z "$short_name" ]; then
+        cmd_name=$(_pypvutil_get_cmd_name "venv")
         cat <<EOF
-Usage: pyvenv SHORT_NAME PY_VERSION [PROJECT_DIRECTORY]
+Usage: $cmd_name SHORT_NAME PY_VERSION [PROJECT_DIRECTORY]
 If PY_VERSION is 2 or 3, the latest installed Python release with that major
 version will be used.
 
@@ -194,7 +210,7 @@ EOF
     fi
 
     if [ "$py_version" = "2" ] || [ "$py_version" = "3" ]; then
-        py_version=$(pylatest "$py_version" "installed_only")
+        py_version=$(pypvutil_latest "$py_version" "installed_only")
     fi
     full_name="${short_name}-${py_version}"
 
@@ -204,9 +220,9 @@ EOF
         echo
         return 1
     fi
-    pyfix "$full_name"
+    pypvutil_fix "$full_name"
     if [ -n "$project_dir" ]; then
-        pyreqs "$full_name" "$project_dir"
+        pypvutil_reqs "$full_name" "$project_dir"
     fi
     cat <<EOF
 
@@ -218,19 +234,22 @@ EOF
     return 0
 }
 
-_pyvenv_complete () {
+_pypvutil_venv_complete () {
     if [ "$COMP_CWORD" = "2" ]; then
-        _pypvutil_base_complete pybases_installed
-        _pypvutil_latest_complete add
+        _pypvutil_base_completions pypvutil_bases_installed
+        _pypvutil_latest_completions add
     fi
 }
-complete -o default -F _pyvenv_complete pyvenv
+complete -o default -F _pypvutil_venv_complete pypvutil_venv
+_pypvutil_create_alias "venv" "yes"
 
 
-pybin_dir () {
+pypvutil_bin_dir () {
+    local cmd_name
     local venv="$1"
     if [ -z "$venv" ]; then
-        echo "Usage: pybin_dir VIRTUALENV"
+        cmd_name=$(_pypvutil_get_cmd_name "bin_dir")
+        echo "Usage: $cmd_name VIRTUALENV"
         echo
         echo "ERROR: No virtualenv given."
         return 1
@@ -238,17 +257,21 @@ pybin_dir () {
     printf "%s\n" "${PYENV_ROOT}/versions/${venv}/bin"
 }
 
-_pybin_dir_complete () {
+_pypvutil_bin_dir_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     fi
 }
-complete -o default -F _pybin_dir_complete pybin_dir
+complete -o default -F _pypvutil_bin_dir_complete pypvutil_bin_dir
+_pypvutil_create_alias "bin_dir" "yes"
 
-pybin_ls () {
+
+pypvutil_bin_ls () {
+    local cmd_name
     local venv="$1"
     if [ -z "$venv" ]; then
-        echo "Usage: pybin_ls VIRTUALENV [LS_ARGS]"
+        cmd_name=$(_pypvutil_get_cmd_name "bin_ls")
+        echo "Usage: $cmd_name VIRTUALENV [LS_ARGS]"
         echo
         echo "ERROR: No virtualenv given."
         return 1
@@ -257,14 +280,17 @@ pybin_ls () {
     ls "$@" "${PYENV_ROOT}/versions/${venv}/bin"
 }
 
-_pybin_ls_complete () {
+_pypvutil_bin_ls_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     fi
 }
-complete -o default -F _pybin_ls_complete pybin_ls
+complete -o default -F _pypvutil_bin_ls_complete pypvutil_bin_ls
+_pypvutil_create_alias "bin_ls" "yes"
 
-pyln () {
+
+pypvutil_ln () {
+    local cmd_name
     local venv="$1"
     local exec_name="$2"
     local target_dir="$3"
@@ -272,10 +298,11 @@ pyln () {
     local target_path
 
     if [ -z "$venv" ]; then
+        cmd_name=$(_pypvutil_get_cmd_name "ln")
         cat <<EOF
 Usage:
 [export PYPVUTIL_LN_DIR=SYMLINK_TARGET_DIR]
-pyln VIRTUALENV EXECUTABLE [TARGET_DIR]
+$cmd_name VIRTUALENV EXECUTABLE [TARGET_DIR]
 
 If TARGET_DIR is omitted, it defaults to the value of the PYPVUTIL_LN_DIR
 environment variable; if that is unset, it defaults to \
@@ -317,21 +344,22 @@ EOF
     fi
 }
 
-_pyln_complete () {
+_pypvutil_ln_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     elif [ "$COMP_CWORD" = "2" ]; then
     while read -r line; do
         COMPREPLY+=("$line")
-    done < <(pybin_ls "${COMP_WORDS[1]}" 2>/dev/null | \
+    done < <(pypvutil_bin_ls "${COMP_WORDS[1]}" 2>/dev/null | \
             grep "^${COMP_WORDS[2]}")
     [ -n "$line" ] && COMPREPLY+=("$line")
     fi
 }
-complete -o default -F _pyln_complete pyln
+complete -o default -F _pypvutil_ln_complete pypvutil_ln
+_pypvutil_create_alias "ln" "yes"
 
 
-pyinst () {
+pypvutil_inst () {
     # replacement for pipsi; creates a pyenv-virtualenv virtualenv
     # specifically for a Python-based utility
 
@@ -339,22 +367,25 @@ pyinst () {
     #rm "${PYPVUTIL_LN_DIR}/EXECUTABLE"
     #pyenv uninstall $package_name-$py_version
 
-    pyutil_wrapper _pyinst "$@"
+    pypvutil_wrapper _pypvutil_inst "$@"
 }
 
-_pyinst () {
+_pypvutil_inst () {
+    local cmd_name
     local package_name="$1"
     local py_version="$2"
     local package_path="$3"
     local full_name
     local install_string
     local ln_dir_string
+    local ln_cmd_name
 
     if [ -z "$package_name" ]; then
+        cmd_name=$(_pypvutil_get_cmd_name "inst")
         cat <<EOF
 Usage:
 [export PYPVUTIL_LN_DIR=SYMLINK_TARGET_DIR]
-pyinst PACKAGE_NAME PY_VERSION [PACKAGE_PATH]
+$cmd_name PACKAGE_NAME PY_VERSION [PACKAGE_PATH]
 
 If PY_VERSION is 2 or 3, the latest installed Python release with that major
 version will be used.
@@ -371,11 +402,11 @@ EOF
     fi
 
     if [ "$py_version" = "2" ] || [ "$py_version" = "3" ]; then
-        py_version=$(pylatest "$py_version" "installed_only")
+        py_version=$(pypvutil_latest "$py_version" "installed_only")
     fi
     full_name="${package_name}-${py_version}"
 
-    if ! pyvenv "$package_name" "$py_version"; then
+    if ! pypvutil_venv "$package_name" "$py_version"; then
         # error will already have been printed
         return 1
     fi
@@ -391,46 +422,50 @@ EOF
         echo
         return 1
     fi
-    if [ -e "$(pybin_dir "${full_name}")/${package_name}" ]; then
-        pyln "${full_name}" "${package_name}"
+    if [ -e "$(pypvutil_bin_dir "${full_name}")/${package_name}" ]; then
+        pypvutil_ln "${full_name}" "${package_name}"
     fi
     ln_dir_string=""
     # value for this invocation
     if [ -n "$PYPVUTIL_LN_DIR" ]; then
         ln_dir_string=" \"$PYPVUTIL_LN_DIR\""
     fi
+    ln_cmd_name=$(_pypvutil_get_cmd_name "ln")
     cat <<EOF
 
 To symlink other executables:
-pyln "${full_name}" "EXECUTABLE"$ln_dir_string
+$ln_cmd_name "${full_name}" "EXECUTABLE"$ln_dir_string
 
 EOF
 
     return 0
 }
 
-_pyinst_complete () {
+_pypvutil_inst_complete () {
     if [ "$COMP_CWORD" = "2" ]; then
-        _pypvutil_base_complete pybases_installed
-        _pypvutil_latest_complete add
+        _pypvutil_base_completions pypvutil_bases_installed
+        _pypvutil_latest_completions add
     fi
 }
-complete -o default -F _pyinst_complete pyinst
+complete -o default -F _pypvutil_inst_complete pypvutil_inst
+_pypvutil_create_alias "inst" "yes"
 
 
-pycopy () {
+pypvutil_copy () {
     # create a new virtualenv based on an existing one, including packages
-    pyutil_wrapper _pycopy "$@"
+    pypvutil_wrapper _pypvutil_copy "$@"
 }
 
-_pycopy () {
+_pypvutil_copy () {
+    local cmd_name
     local source_venv="$1"
     local target_short_name="$2"
     local target_py_version="$3"
     local target_long_name
     if [ -z "$source_venv" ]; then
+        cmd_name=$(_pypvutil_get_cmd_name "copy")
         cat <<EOF
-Usage: pycopy SOURCE_VIRTUALENV TARGET_SHORT_NAME [TARGET_PY_VERSION]
+Usage: $cmd_name SOURCE_VIRTUALENV TARGET_SHORT_NAME [TARGET_PY_VERSION]
 
 ERROR: No source virtualenv given.
 EOF
@@ -445,7 +480,7 @@ EOF
         return 1
     fi
     if [ -z "$target_py_version" ]; then
-        target_py_version=$(pyvenv_version "$source_venv")
+        target_py_version=$(pypvutil_venv_version "$source_venv")
         if [ -z "$target_py_version" ]; then
             # error already printed
             return 1
@@ -453,10 +488,10 @@ EOF
     else
         if [ "$target_py_version" = "2" ] || \
                 [ "$target_py_version" = "3" ]; then
-            target_py_version=$(pylatest "$target_py_version" \
+            target_py_version=$(pypvutil_latest "$target_py_version" \
                 "installed_only")
         fi
-        if ! pyname_is_global "$target_py_version"; then
+        if ! pypvutil_name_is_global "$target_py_version"; then
             echo "ERROR: Target Python version not found."
             return 1
         fi
@@ -464,28 +499,29 @@ EOF
     target_long_name="${target_short_name}-${target_py_version}"
     if pyname_is_venv "$target_long_name"; then
         cat <<EOF
-ERROR: Target virtualenv already exists; use pypipcopy if you want to copy
+ERROR: Target virtualenv already exists; use pypvutil_pipcopy if you want to copy
 just the packages.
 EOF
         return 1
     fi
 
     echo "Creating virtualenv..."
-    if ! pyvenv "$target_short_name" "$target_py_version"; then
+    if ! pypvutil_venv "$target_short_name" "$target_py_version"; then
         # error already printed
         return 1
     fi
     echo "Copying packages..."
-    pypipcopy "$source_venv" "$target_long_name"
+    pypvutil_pipcopy "$source_venv" "$target_long_name"
 }
 
-_pycopypvutil_complete () {
+_pypvutil_copy_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     fi
     if [ "$COMP_CWORD" = "3" ]; then
-        _pypvutil_base_complete pybases_installed
-        _pypvutil_latest_complete add
+        _pypvutil_base_completions pypvutil_bases_installed
+        _pypvutil_latest_completions add
     fi
 }
-complete -o default -F _pycopypvutil_complete pycopy
+complete -o default -F _pypvutil_copy_complete pypvutil_copy
+_pypvutil_create_alias "copy" "yes"

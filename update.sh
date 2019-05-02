@@ -18,18 +18,20 @@
 # update / change #
 ###################
 
-pyreqs () {
+pypvutil_reqs () {
     # install a project's requirements in a pyenv-virtualenv virtualenv
-    pyutil_wrapper _pyreqs "$@"
+    pypvutil_wrapper _pypvutil_reqs "$@"
 }
 
-_pyreqs () {
+_pypvutil_reqs () {
+    local cmd_name
     local venv="$1"
     local project_dir="$2"
     local i
 
     if [ -z "$venv" ]; then
-        echo "Usage: pyreqs VIRTUALENV PROJECT_DIRECTORY"
+        cmd_name=$(_pypvutil_get_cmd_name "reqs")
+        echo "Usage: $cmd_name VIRTUALENV PROJECT_DIRECTORY"
         echo
         echo "ERROR: No virtualenv given."
         return 1
@@ -67,25 +69,28 @@ _pyreqs () {
     return 0
 }
 
-_pyreqs_complete () {
+_pypvutil_reqs_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     fi
 }
-complete -o default -F _pyreqs_complete pyreqs
+complete -o default -F _pypvutil_reqs_complete pypvutil_reqs
+_pypvutil_create_alias "reqs" "yes"
 
 
-pypipcopy () {
+pypvutil_pipcopy () {
     # add the packages from one virtualenv to another virtualenv
-    pyutil_wrapper _pypipcopy "$@"
+    pypvutil_wrapper _pypvutil_pipcopy "$@"
 }
 
-_pypipcopy () {
+_pypvutil_pipcopy () {
+    local cmd_name
     local source_venv="$1"
     local target_venv="$2"
     local reqs_file
     if [ -z "$source_venv" ]; then
-        echo "Usage: pypipcopy SOURCE_VIRTUALENV TARGET_VIRTUALENV"
+        cmd_name=$(_pypvutil_get_cmd_name "pipcopy")
+        echo "Usage: $cmd_name SOURCE_VIRTUALENV TARGET_VIRTUALENV"
         echo
         echo "ERROR: No source virtualenv given."
         return 1
@@ -144,7 +149,8 @@ _pypipcopy () {
 
 _pypvutil_pipcopy_complete () {
     if [ "$COMP_CWORD" = "1" ] || [ "$COMP_CWORD" = "2" ]; then
-        _pypvutil_venv_complete
+        _pypvutil_venv_completions
     fi
 }
-complete -o default -F _pypvutil_pipcopy_complete pypipcopy
+complete -o default -F _pypvutil_pipcopy_complete pypvutil_pipcopy
+_pypvutil_create_alias "pipcopy" "yes"
