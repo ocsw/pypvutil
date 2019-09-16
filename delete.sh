@@ -27,7 +27,8 @@ _pypvutil_rm_complete () {
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ "$COMP_CWORD" = "1" ] || [ "$COMP_CWORD" = "2" ]; then
         COMPREPLY=()
-        if [[ "--force" =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
+        # quotes needed because -f is an operator
+        if [[ --force =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
             COMPREPLY+=("--force")
         fi
         _pypvutil_all_completions add

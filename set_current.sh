@@ -53,7 +53,8 @@ _pypvutil_global_complete () {
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ "$COMP_CWORD" = "1" ]; then
         COMPREPLY=()
-        if [[ "system" =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
+        # quotes needed because -f is an operator
+        if [[ system =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
             COMPREPLY=("system")
         fi
         _pypvutil_all_completions all
