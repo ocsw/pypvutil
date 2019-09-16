@@ -28,28 +28,30 @@ _python_venv_prompt () {
     fi
 }
 
-# check for command in path
-in_path () {
+# check for availability of a command (or commands);
+# searches both the PATH and functions
+# see also https://github.com/koalaman/shellcheck/wiki/SC2230
+is_available () {
     hash "$@" > /dev/null 2>&1
 }
 
-if in_path pip ||
-        in_path pip2 ||
-        in_path pip3; then
+if is_available pip ||
+        is_available pip2 ||
+        is_available pip3; then
     _pip_completion () {
         # shellcheck disable=SC2207
         COMPREPLY=( $( COMP_WORDS="${COMP_WORDS[*]}" \
                        COMP_CWORD=$COMP_CWORD \
                        PIP_AUTO_COMPLETE=1 $1 ) )
     }
-    in_path pip && complete -o default -F _pip_completion pip
-    in_path pip2 && complete -o default -F _pip_completion pip2
-    in_path pip3 && complete -o default -F _pip_completion pip3
+    is_available pip && complete -o default -F _pip_completion pip
+    is_available pip2 && complete -o default -F _pip_completion pip2
+    is_available pip3 && complete -o default -F _pip_completion pip3
 fi
 
-if in_path pyenv; then
+if is_available pyenv; then
     eval "$(pyenv init - | grep -v "PATH")"
 fi
-if in_path pyenv-virtualenv-init; then
+if is_available pyenv-virtualenv-init; then
     eval "$(pyenv virtualenv-init - | grep -v "PATH")"
 fi
