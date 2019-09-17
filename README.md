@@ -60,3 +60,7 @@ pyvenv_version
 pyreqs
 pypipcopy
 pyrm
+
+## Useful Extras
+
+See <https://github.com/ocsw/dotfiles/blob/master/dot.bashrc.d/python.post.sh> and <https://github.com/ocsw/dotfiles/blob/master/dot.bashrc.d/python.post.sh> for ways to integrate `pyenv-virtualenv` into your prompt and path and add completion to `pip2` and `pip3`.
