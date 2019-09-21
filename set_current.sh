@@ -53,12 +53,33 @@ _pypvutil_global_complete () {
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ "$COMP_CWORD" = "1" ]; then
         COMPREPLY=()
-        # quotes needed because -f is an operator
-        if [[ system =~ ^$cur_word ]] || [[ "-f" =~ ^$cur_word ]]; then
-            COMPREPLY=("system")
+        if [[ system =~ ^$cur_word ]]; then
+            COMPREPLY+=("system")
         fi
         _pypvutil_all_completions all
     fi
 }
 complete -o default -F _pypvutil_global_complete pypvutil_global
 _pypvutil_create_alias "global" "yes"
+
+# wrap 'pyenv local' for convenience, preserving autocomplete
+pypvutil_local () {
+    local env="$1"  # base or venv
+    pyenv local "$env"  # if empty, just prints current
+}
+
+_pypvutil_local_complete () {
+    local cur_word="${COMP_WORDS[$COMP_CWORD]}"
+    if [ "$COMP_CWORD" = "1" ]; then
+        COMPREPLY=()
+        if [[ system =~ ^$cur_word ]]; then
+            COMPREPLY+=("system")
+        fi
+        if [[ --unset =~ ^$cur_word ]]; then
+            COMPREPLY+=("--unset")
+        fi
+        _pypvutil_all_completions all
+    fi
+}
+complete -o default -F _pypvutil_local_complete pypvutil_local
+_pypvutil_create_alias "local" "yes"
