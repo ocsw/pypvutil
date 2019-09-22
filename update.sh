@@ -87,7 +87,7 @@ _pypvutil_pipcopy () {
     local cmd_name
     local source_venv="$1"
     local target_venv="$2"
-    local reqs_file
+    local reqs_list
     if [ -z "$source_venv" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "pipcopy")
         echo "Usage: $cmd_name SOURCE_VIRTUALENV TARGET_VIRTUALENV"
@@ -118,14 +118,7 @@ _pypvutil_pipcopy () {
         echo
         return 1
     fi
-    reqs_file=$(mktemp)
-    if [ -z "$reqs_file" ]; then
-        echo
-        echo "ERROR: Can't create temp file.  Stopping."
-        echo
-        return 1
-    fi
-    if ! pip freeze --all --local >| "$reqs_file"; then
+    if ! reqs_list=$(pip freeze --all --local); then
         echo
         echo "ERROR: Can't get package list.  Stopping."
         echo
@@ -137,14 +130,12 @@ _pypvutil_pipcopy () {
         echo
         return 1
     fi
-    if ! pip install -r "$reqs_file"; then
+    if ! pip install -r <(printf "%s\n" "$reqs_list"); then
         echo
         echo "ERROR: Can't install packages.  Stopping."
         echo
-        rm -rf "$reqs_file"
         return 1
     fi
-    rm -rf "$reqs_file"
 }
 
 _pypvutil_pipcopy_complete () {

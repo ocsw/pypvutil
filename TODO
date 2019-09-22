@@ -48,3 +48,5 @@ _pyenv ()
         COMPREPLY=($(compgen -W "$completions" -- "$word"));
     fi
 }
+
+find a portable way to be able to use temp files in pypipcopy and pyide_vscode
