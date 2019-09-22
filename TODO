@@ -13,21 +13,13 @@ nosort for pyglobal
 temp vert?
 
 pybase - tox, pip
-move to .sh, sep repo
-.python_version in pyvirt
 docs: CRUD
-$0
-aliases/symlinks
 return 0
-PY_ -> PYTHON_?
 auto local/trailing tests
 verify versions, venvs, etc.
 bash $! and/or if around complete
-ln python check?
 activate checks
-prefix
 || return "$?"
-stderr?
 
 https://virtualfish.readthedocs.io/en/latest/usage.html#commands
 vf all <command> - Run a command in all virtualenvs sequentially.
