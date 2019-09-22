@@ -260,7 +260,7 @@ EOF
     fi
     if ! pypvutil_name_is_global "$py_env" && \
             ! pypvutil_name_is_venv "$py_env"; then
-        echo "ERROR: Specified Python environment not found."
+        echo "ERROR: Specified Python environment not found." 1>&2
         return 1
     fi
     printf "%s\n" "${PYENV_ROOT}/versions/${py_env}/bin"
@@ -291,7 +291,7 @@ EOF
     fi
     if ! pypvutil_name_is_global "$py_env" && \
             ! pypvutil_name_is_venv "$py_env"; then
-        echo "ERROR: Specified Python environment not found."
+        echo "ERROR: Specified Python environment not found." 1>&2
         return 1
     fi
     shift

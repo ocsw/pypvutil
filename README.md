@@ -36,6 +36,7 @@ These assume `PYPVUTIL_PREFIX=py`; otherwise they will be named `pypvutil_act`, 
 pyact
 pyglobal
 pylocal
+pyide_vscode
 pybase
 pywrapper
 pyfix

@@ -26,8 +26,6 @@ bash $! and/or if around complete
 ln python check?
 activate checks
 prefix
-vscode
-    for i in */*/.python-version; do vscd=$(dirname $i)/.vscode; mkdir -p $vscd; touch $vscd/settings.json; if [ -z "$(cat $vscd/settings.json)" ]; then echo "{}" >| $vscd/settings.json; fi; echo $vscd/settings.json; cat $vscd/settings.json; jq --indent 4 --arg pythonPath $(pybin_dir $(cat $i))/python '. + {"python.pythonPath": $pythonPath}' < $vscd/settings.json > /tmp/zzz; mv /tmp/zzz $vscd/settings.json; done
 || return "$?"
 stderr?
 
