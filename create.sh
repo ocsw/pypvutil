@@ -246,20 +246,29 @@ _pypvutil_create_alias "venv" "yes"
 
 pypvutil_bin_dir () {
     local cmd_name
-    local venv="$1"
-    if [ -z "$venv" ]; then
+    local py_env="$1"
+    if [ -z "$py_env" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "bin_dir")
-        echo "Usage: $cmd_name VIRTUALENV"
-        echo
-        echo "ERROR: No virtualenv given."
+        cat <<EOF
+Usage: $cmd_name PYTHON_ENV
+
+PYTHON_ENV can be a virtualenv or an installed base version.
+
+ERROR: No Python environment given.
+EOF
         return 1
     fi
-    printf "%s\n" "${PYENV_ROOT}/versions/${venv}/bin"
+    if ! pypvutil_name_is_global "$py_env" && \
+            ! pypvutil_name_is_venv "$py_env"; then
+        echo "ERROR: Specified Python environment not found."
+        return 1
+    fi
+    printf "%s\n" "${PYENV_ROOT}/versions/${py_env}/bin"
 }
 
 _pypvutil_bin_dir_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_completions
+        _pypvutil_all_completions
     fi
 }
 complete -o default -F _pypvutil_bin_dir_complete pypvutil_bin_dir
@@ -268,21 +277,30 @@ _pypvutil_create_alias "bin_dir" "yes"
 
 pypvutil_bin_ls () {
     local cmd_name
-    local venv="$1"
-    if [ -z "$venv" ]; then
+    local py_env="$1"
+    if [ -z "$py_env" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "bin_ls")
-        echo "Usage: $cmd_name VIRTUALENV [LS_ARGS]"
-        echo
-        echo "ERROR: No virtualenv given."
+        cat <<EOF
+Usage: $cmd_name PYTHON_ENV [LS_ARGS]
+
+PYTHON_ENV can be a virtualenv or an installed base version.
+
+ERROR: No Python environment given.
+EOF
+        return 1
+    fi
+    if ! pypvutil_name_is_global "$py_env" && \
+            ! pypvutil_name_is_venv "$py_env"; then
+        echo "ERROR: Specified Python environment not found."
         return 1
     fi
     shift
-    ls "$@" "${PYENV_ROOT}/versions/${venv}/bin"
+    ls "$@" "${PYENV_ROOT}/versions/${py_env}/bin"
 }
 
 _pypvutil_bin_ls_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_completions
+        _pypvutil_all_completions
     fi
 }
 complete -o default -F _pypvutil_bin_ls_complete pypvutil_bin_ls
@@ -291,25 +309,32 @@ _pypvutil_create_alias "bin_ls" "yes"
 
 pypvutil_ln () {
     local cmd_name
-    local venv="$1"
+    local py_env="$1"
     local exec_name="$2"
     local target_dir="$3"
     local source_path
     local target_path
 
-    if [ -z "$venv" ]; then
+    if [ -z "$py_env" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "ln")
         cat <<EOF
 Usage:
 [export PYPVUTIL_LN_DIR=SYMLINK_TARGET_DIR]
-$cmd_name VIRTUALENV EXECUTABLE [TARGET_DIR]
+$cmd_name PYTHON_ENV EXECUTABLE [TARGET_DIR]
+
+PYTHON_ENV can be a virtualenv or an installed base version.
 
 If TARGET_DIR is omitted, it defaults to the value of the PYPVUTIL_LN_DIR
 environment variable; if that is unset, it defaults to \
 $PYPVUTIL_LN_DIR_DEFAULT_STR.
 
-ERROR: No virtualenv given.
+ERROR: No Python environment given.
 EOF
+        return 1
+    fi
+    if ! pypvutil_name_is_global "$py_env" && \
+            ! pypvutil_name_is_venv "$py_env"; then
+        echo "ERROR: Specified Python environment not found."
         return 1
     fi
     if [ -z "$exec_name" ]; then
@@ -329,7 +354,7 @@ EOF
         return 1
     fi
 
-    source_path="${PYENV_ROOT}/versions/${venv}/bin/${exec_name}"
+    source_path="${PYENV_ROOT}/versions/${py_env}/bin/${exec_name}"
     target_path="${target_dir}/${exec_name}"
     if ln -s "$source_path" "$target_path"; then
         echo "Symlink \"${target_dir}/${exec_name}\" created."
@@ -346,13 +371,13 @@ EOF
 
 _pypvutil_ln_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
-        _pypvutil_venv_completions
+        _pypvutil_all_completions
     elif [ "$COMP_CWORD" = "2" ]; then
-    while read -r line; do
-        COMPREPLY+=("$line")
-    done < <(pypvutil_bin_ls "${COMP_WORDS[1]}" 2>/dev/null | \
+        while read -r line; do
+            COMPREPLY+=("$line")
+        done < <(pypvutil_bin_ls "${COMP_WORDS[1]}" 2>/dev/null | \
             grep "^${COMP_WORDS[2]}")
-    [ -n "$line" ] && COMPREPLY+=("$line")
+        [ -n "$line" ] && COMPREPLY+=("$line")
     fi
 }
 complete -o default -F _pypvutil_ln_complete pypvutil_ln

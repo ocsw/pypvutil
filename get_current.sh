@@ -74,7 +74,7 @@ pypvutil_name_is_global () {
 }
 _pypvutil_create_alias "name_is_global" "no"
 
-pyname_is_venv () {
+pypvutil_name_is_venv () {
     local cmd_name
     local name="$1"
     if [ -z "$name" ]; then
