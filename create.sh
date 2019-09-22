@@ -499,8 +499,8 @@ EOF
     target_long_name="${target_short_name}-${target_py_version}"
     if pyname_is_venv "$target_long_name"; then
         cat <<EOF
-ERROR: Target virtualenv already exists; use pypvutil_pipcopy if you want to copy
-just the packages.
+ERROR: Target virtualenv already exists; use pypvutil_pipcopy if you want to
+copy just the packages.
 EOF
         return 1
     fi
