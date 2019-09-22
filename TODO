@@ -34,3 +34,19 @@ stderr?
 https://virtualfish.readthedocs.io/en/latest/usage.html#commands
 vf all <command> - Run a command in all virtualenvs sequentially.
 vf connect - Connect the current working directory with the currently active virtualenv. This requires the auto-activation plugin to be enabled in order to have any effect besides creating a .venv file in the current directory.
+
+improve completions:
+_pyenv ()
+{
+    COMPREPLY=();
+    local word="${COMP_WORDS[COMP_CWORD]}";
+    if [ "$COMP_CWORD" -eq 1 ]; then
+        COMPREPLY=($(compgen -W "$(pyenv commands)" -- "$word"));
+    else
+        local words=("${COMP_WORDS[@]}");
+        unset words[0];
+        unset words[$COMP_CWORD];
+        local completions=$(pyenv completions "${words[@]}");
+        COMPREPLY=($(compgen -W "$completions" -- "$word"));
+    fi
+}
