@@ -148,6 +148,13 @@ EOF
             echo "ERROR: Can't process VSCode settings file."
             return 1
         fi
+        # this isn't ideal, but it's portable, unlike something like mktemp,
+        # and it should be fine in this context; Bash variables can contain
+        # many megabytes, and the command-line-length limit doesn't apply to
+        # builtins like printf
+        # see:
+        # https://stackoverflow.com/questions/5076283/shell-variable-capacity
+        # https://stackoverflow.com/questions/19354870/bash-command-line-and-input-limit
         printf "%s\n" "$new_file_contents" >| "$vsc_settings_file"
     else  # set
         if ! new_python_path="$(pypvutil_bin_dir "$py_env")/python"; then
@@ -167,6 +174,7 @@ EOF
             echo "ERROR: Can't process VSCode settings file."
             return 1
         fi
+        # see note above, in the --unset section
         printf "%s\n" "$new_file_contents" >| "$vsc_settings_file"
     fi
 }
