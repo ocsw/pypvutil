@@ -20,6 +20,7 @@ verify versions, venvs, etc.
 bash $! and/or if around complete
 activate checks
 || return "$?"
+handle errors in the wrapper after the command better?
 
 https://virtualfish.readthedocs.io/en/latest/usage.html#commands
 vf all <command> - Run a command in all virtualenvs sequentially.
