@@ -44,7 +44,7 @@ _pypvutil_reqs () {
         echo "ERROR: Bad project directory."
         return 1
     fi
-    if ! compgen -G "$project_dir/*requirements.txt" \
+    if ! compgen -G "$project_dir/*requirements*.txt" \
             > /dev/null 2>&1; then
         echo "ERROR: No requirements files in project directory."
         return 1
@@ -62,7 +62,7 @@ _pypvutil_reqs () {
         echo
         return 1
     fi
-    for i in *requirements.txt; do
+    for i in *requirements*.txt; do
         pip install -r "$i"
     done
 

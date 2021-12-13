@@ -201,7 +201,7 @@ EOF
         return 1
     fi
     if [ -n "$project_dir" ] && \
-            ! compgen -G "$project_dir/*requirements.txt" \
+            ! compgen -G "$project_dir/*requirements*.txt" \
             > /dev/null 2>&1; then
         cat <<EOF
 ERROR: No requirements files in project directory; try again without it.
