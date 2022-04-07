@@ -86,7 +86,7 @@ complete -o default -F _pypvutil_local_complete pypvutil_local
 _pypvutil_create_alias "local" "yes"
 
 
-# add 'python.pythonPath' setting to VSCode in a directory; uses jq
+# add 'python.defaultInterpreterPath' setting to VSCode in a directory; uses jq
 pypvutil_ide_vscode () {
     local cmd_name
     local py_env="$1"
@@ -106,7 +106,7 @@ pypvutil_ide_vscode () {
         cat <<EOF
 Usage: $cmd_name PYTHON_ENV | --unset | --get
 
-Sets, unsets, or gets the 'python.pythonPath' setting for VSCode.
+Sets, unsets, or gets the 'python.defaultInterpreterPath' setting for VSCode.
 
 PYTHON_ENV can be a virtualenv, an installed base version, or '2' or '3'.  With
 '2' or '3', the latest installed Python release with that major version will be
@@ -127,8 +127,8 @@ EOF
         if ! [ -f "$vsc_settings_file" ]; then
             return 0
         fi
-        if ! cur_setting=$(jq '."python.pythonPath"' < "$vsc_settings_file" \
-                2>/dev/null); then
+        if ! cur_setting=$(jq '."python.defaultInterpreterPath"' \
+                < "$vsc_settings_file" 2>/dev/null); then
             echo "ERROR: Can't process VSCode settings file."
             return 1
         fi
@@ -143,7 +143,8 @@ EOF
         if ! [ -f "$vsc_settings_file" ]; then
             return 0
         fi
-        if ! new_file_contents=$(jq --indent 4 'del(."python.pythonPath")' \
+        if ! new_file_contents=$(jq --indent 4 \
+                'del(."python.defaultInterpreterPath")' \
                 < "$vsc_settings_file"); then
             echo "ERROR: Can't process VSCode settings file."
             return 1
@@ -168,8 +169,8 @@ EOF
             echo "{}" >| "$vsc_settings_file"
         fi
         if ! new_file_contents=$(jq --indent 4 \
-                --arg pythonPath "$new_python_path" \
-                '. + {"python.pythonPath": $pythonPath}' \
+                --arg defaultInterpreterPath "$new_python_path" \
+                '. + {"python.defaultInterpreterPath": $defaultInterpreterPath}' \
                 < "$vsc_settings_file"); then
             echo "ERROR: Can't process VSCode settings file."
             return 1
