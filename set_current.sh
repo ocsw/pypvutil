@@ -170,7 +170,9 @@ EOF
         fi
         if ! new_file_contents=$(jq --indent 4 \
                 --arg defaultInterpreterPath "$new_python_path" \
-                '. + {"python.defaultInterpreterPath": $defaultInterpreterPath}' \
+                '. + {
+                    "python.defaultInterpreterPath": $defaultInterpreterPath
+                }' \
                 < "$vsc_settings_file"); then
             echo "ERROR: Can't process VSCode settings file."
             return 1
