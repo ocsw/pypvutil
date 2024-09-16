@@ -89,7 +89,7 @@ _pypvutil_create_alias "local" "yes"
 # add 'python.defaultInterpreterPath' setting to VSCode in a directory; uses jq
 pypvutil_ide_vscode () {
     local cmd_name
-    local py_env="$1"
+    local py_env
     local vsc_dir=".vscode"
     local vsc_settings_file="${vsc_dir}/settings.json"
     local cur_setting
@@ -100,6 +100,22 @@ pypvutil_ide_vscode () {
         echo "ERROR: The jq utility isn't available."
         return 1
     fi
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            -f|--file)
+                vsc_settings_file="$2"
+                vsc_dir=$(dirname "$vsc_settings_file")
+                shift
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    py_env="$1"
 
     if [ -z "$py_env" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "ide_vscode")
@@ -112,7 +128,9 @@ PYTHON_ENV can be a virtualenv, an installed base version, or '2' or '3'.  With
 '2' or '3', the latest installed Python release with that major version will be
 used.
 
-Must be run from the root of the VSCode project directory.
+Must be run from the root of the VSCode project directory.  Alternatively,
+specify '-f|--file PATH_TO_SETTINGS_FILE' before the other argument; this is
+useful for workspace files.
 
 ERROR: No Python environment given.
 EOF
