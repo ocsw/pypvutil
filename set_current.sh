@@ -212,70 +212,31 @@ _pypvutil_ide_vscode_complete () {
 
     COMPREPLY=()
 
-    if [ "$prev_word" = "-s" ] || [ "$prev_word" = "--set" ]; then
-        _pypvutil_all_completions add
-        _pypvutil_latest_completions add
-        return 0
-    fi
-    if [ "$prev_word" = "-f" ] || [ "$prev_word" = "--file" ]; then
-        while read -r line; do
-            COMPREPLY+=("$line")
-        done < <(compgen -o default "$cur_word")
-        return 0
-    fi
-    if [ "$prev_word" = "-i" ] || [ "$prev_word" = "--indent" ]; then
-        # jq only allows 0-7
-        COMPREPLY=(0 1 2 3 4 5 6 7)
-        return 0
-    fi
+    case "$prev_word" in
+        -s|--set)
+            _pypvutil_all_completions add
+            _pypvutil_latest_completions add
+            return 0
+            ;;
+        -f|--file)
+            while read -r line; do
+                COMPREPLY+=("$line")
+            done < <(compgen -o default "$cur_word")
+            return 0
+            ;;
+        -i|--indent)
+            # jq only allows 0-7
+            COMPREPLY=(0 1 2 3 4 5 6 7)
+            return 0
+            ;;
+    esac
 
-    if [[ -z $cur_word ]] || [[ $cur_word = - ]]; then
-        COMPREPLY=(
+    while read -r line; do
+        COMPREPLY+=("$line")
+    done < <(compgen -W "
             -s --set -u --unset -g --get -f --file -w --workspace -i --indent
             -h --help
-        )
-        return 0
-    fi
-    if [[ $cur_word = -- ]]; then
-        COMPREPLY=(--set --unset --get --file --workspace --indent --help)
-        return 0
-    fi
-
-    if [[ "-s" =~ ^$cur_word ]]; then
-        COMPREPLY+=("-s")
-    elif [[ --set =~ ^$cur_word ]]; then
-        COMPREPLY+=("--set")
-    #
-    elif [[ "-u" =~ ^$cur_word ]]; then
-        COMPREPLY+=("-u")
-    elif [[ --unset =~ ^$cur_word ]]; then
-        COMPREPLY+=("--unset")
-    #
-    elif [[ "-g" =~ ^$cur_word ]]; then
-        COMPREPLY+=("-g")
-    elif [[ --get =~ ^$cur_word ]]; then
-        COMPREPLY+=("--get")
-    #
-    elif [[ "-f" =~ ^$cur_word ]]; then
-        COMPREPLY+=("-f")
-    elif [[ --file =~ ^$cur_word ]]; then
-        COMPREPLY+=("--file")
-    #
-    elif [[ "-w" =~ ^$cur_word ]]; then
-        COMPREPLY+=("-w")
-    elif [[ --workspace =~ ^$cur_word ]]; then
-        COMPREPLY+=("--workspace")
-    #
-    elif [[ "-i" =~ ^$cur_word ]]; then
-        COMPREPLY+=("-i")
-    elif [[ --indent =~ ^$cur_word ]]; then
-        COMPREPLY+=("--indent")
-    #
-    elif [[ "-h" =~ ^$cur_word ]]; then
-        COMPREPLY+=("-h")
-    elif [[ --help =~ ^$cur_word ]]; then
-        COMPREPLY+=("--help")
-    fi
+        " -- "$cur_word")
 }
 complete -F _pypvutil_ide_vscode_complete pypvutil_ide_vscode
 _pypvutil_create_alias "ide_vscode" "yes"
