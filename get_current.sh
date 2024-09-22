@@ -158,7 +158,7 @@ pypvutil_venv_version () {
     fi
 
     py_version=$(pyenv versions | sed -e 's/^..//' -e 's/ (.*$//' | \
-        grep "/envs/${venv}\$" | sed 's|/.*$||')
+        grep "/envs/${venv}\$" | grep -v ' --> ' | sed 's|/.*$||')
     if [ -z "$py_version" ]; then
         echo
         echo "ERROR: Can't get version for virtualenv."
