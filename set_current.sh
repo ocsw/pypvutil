@@ -86,54 +86,96 @@ complete -o default -F _pypvutil_local_complete pypvutil_local
 _pypvutil_create_alias "local" "yes"
 
 
-# add 'python.defaultInterpreterPath' setting to VSCode in a directory; uses jq
-pypvutil_ide_vscode () {
-    local cmd_name
-    local py_env
-    local vsc_dir=".vscode"
-    local vsc_settings_file="${vsc_dir}/settings.json"
-    local cur_setting
-    local new_file_contents
-    local new_python_path
+_pypvutil_ide_vscode_usage () {
+    cmd_name=$(_pypvutil_get_cmd_name "ide_vscode")
+    cat 1>&2 <<EOF
+Usage:
+    $cmd_name -s|--set PYTHON_ENV [ OPTIONS ]
+    $cmd_name -u|--unset [ OPTIONS ]
+    $cmd_name -g|--get [ OPTIONS ]
 
-    if ! hash jq > /dev/null 2>&1; then
-        echo "ERROR: The jq utility isn't available."
-        return 1
-    fi
+Sets, unsets, or gets the VSCode 'python.defaultInterpreterPath' workspace
+setting.
+
+When setting the value, PYTHON_ENV can be a virtualenv, an installed base
+version, or '2' or '3'.  With '2' or '3', the latest installed Python release
+with that major version will be used.
+
+The command must be run from the root of the VSCode project directory.
+Alternatively, specify '-f|--file PATH_TO_SETTINGS_FILE'; this is particularly
+useful for multi-folder workspace files.  Additionally, for multi-folder
+workspace files use '-w|--workspace', which puts the settings under the
+'settings' section of the file (rather than at the top level, as in regular
+config files).
+
+The file will be formatted with 4-space indents when setting or unsetting the
+value; to change this, specify '-i|--indent NUM'.
+
+Options can appear in any order.
+EOF
+}
+
+# uses the vscode-setting function, which uses jq
+pypvutil_ide_vscode () {
+    local mode=""
+    local py_env=""
+    local vsc_settings_file=".vscode/settings.json"
+    local workspace_arg=""
+    local indent=4
+    local new_python_path
 
     while [ "$#" -gt 0 ]; do
         case "$1" in
-            -f|--file)
-                vsc_settings_file="$2"
-                vsc_dir=$(dirname "$vsc_settings_file")
+            -s|--set)
+                mode="set"
+                py_env="$2"
                 shift
                 shift
                 ;;
+            -u|--unset)
+                mode="unset"
+                shift
+                ;;
+            -g|--get)
+                mode="get"
+                shift
+                ;;
+            -f|--file)
+                vsc_settings_file="$2"
+                shift
+                shift
+                ;;
+            -w|--workspace)
+                workspace_arg="-w"
+                shift
+                ;;
+            -i|--indent)
+                indent="$2"
+                shift
+                shift
+                ;;
+            -h|--help)
+                _pypvutil_ide_vscode_usage
+                return 0
+                ;;
             *)
-                break
+                _pypvutil_ide_vscode_usage
+                return 1
                 ;;
         esac
     done
 
-    py_env="$1"
+    if [ -z "$mode" ]; then
+        _pypvutil_ide_vscode_usage
+        echo 1>&2
+        echo "ERROR: No action (set/unset/get) specified." 1>&2
+        return 1
+    fi
 
-    if [ -z "$py_env" ]; then
-        cmd_name=$(_pypvutil_get_cmd_name "ide_vscode")
-        cat <<EOF
-Usage: $cmd_name PYTHON_ENV | --unset | --get
-
-Sets, unsets, or gets the 'python.defaultInterpreterPath' setting for VSCode.
-
-PYTHON_ENV can be a virtualenv, an installed base version, or '2' or '3'.  With
-'2' or '3', the latest installed Python release with that major version will be
-used.
-
-Must be run from the root of the VSCode project directory.  Alternatively,
-specify '-f|--file PATH_TO_SETTINGS_FILE' before the other argument; this is
-useful for workspace files.
-
-ERROR: No Python environment given.
-EOF
+    if [ "$mode" = "set" ] && [ -z "$py_env" ]; then
+        _pypvutil_ide_vscode_usage
+        echo 1>&2
+        echo "ERROR: No Python environment specified." 1>&2
         return 1
     fi
 
@@ -141,62 +183,19 @@ EOF
         py_env=$(pypvutil_latest "$py_env" "installed_only")
     fi
 
-    if [ "$py_env" = "--get" ]; then
-        if ! [ -f "$vsc_settings_file" ]; then
-            return 0
-        fi
-        if ! cur_setting=$(jq '."python.defaultInterpreterPath"' \
-                < "$vsc_settings_file" 2>/dev/null); then
-            echo "ERROR: Can't process VSCode settings file."
-            return 1
-        fi
-        # remove JSON quotes
-        cur_setting="${cur_setting#\"}"
-        cur_setting="${cur_setting%\"}"
-        if [ -z "$cur_setting" ] || [ "$cur_setting" = "null" ]; then
-            return 0
-        fi
-        printf "%s\n" "$cur_setting"
-    elif [ "$py_env" = "--unset" ]; then
-        if ! [ -f "$vsc_settings_file" ]; then
-            return 0
-        fi
-        if ! new_file_contents=$(jq --indent 4 \
-                'del(."python.defaultInterpreterPath")' \
-                < "$vsc_settings_file"); then
-            echo "ERROR: Can't process VSCode settings file."
-            return 1
-        fi
-        # this isn't ideal, but it's portable, unlike something like mktemp,
-        # and it should be fine in this context; Bash variables can contain
-        # many megabytes, and the command-line-length limit doesn't apply to
-        # builtins like printf
-        # see:
-        # https://stackoverflow.com/questions/5076283/shell-variable-capacity
-        # https://stackoverflow.com/questions/19354870/bash-command-line-and-input-limit
-        printf "%s\n" "$new_file_contents" >| "$vsc_settings_file"
-    else  # set
+    if [ "$mode" = "get" ]; then
+        vscode-setting -f "$vsc_settings_file" $workspace_arg -i "$indent" \
+            -g "python.defaultInterpreterPath"
+    elif [ "$mode" = "unset" ]; then
+        vscode-setting -f "$vsc_settings_file" $workspace_arg -i "$indent" \
+            -u "python.defaultInterpreterPath"
+    elif [ "$mode" = "set" ]; then
         if ! new_python_path="$(pypvutil_bin_dir "$py_env")/python"; then
             # pypvutil_bin_dir will have emitted an error message
             return 1
         fi
-        mkdir -p "$vsc_dir"
-        # the jq addition won't work on a blank file
-        if ! [ -f "$vsc_settings_file" ] || \
-                ! grep '{' "$vsc_settings_file" > /dev/null 2>&1; then
-            echo "{}" >| "$vsc_settings_file"
-        fi
-        if ! new_file_contents=$(jq --indent 4 \
-                --arg defaultInterpreterPath "$new_python_path" \
-                '. + {
-                    "python.defaultInterpreterPath": $defaultInterpreterPath
-                }' \
-                < "$vsc_settings_file"); then
-            echo "ERROR: Can't process VSCode settings file."
-            return 1
-        fi
-        # see note above, in the --unset section
-        printf "%s\n" "$new_file_contents" >| "$vsc_settings_file"
+        vscode-setting -f "$vsc_settings_file" $workspace_arg -i "$indent" \
+            -s "python.defaultInterpreterPath" "$new_python_path"
     fi
 }
 

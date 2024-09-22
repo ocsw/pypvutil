@@ -2,13 +2,23 @@
 
 Utility shell functions to make it easier to work with `pyenv-virtualenv`.
 
-## Prerequisites
+## Requirements
 
 * [`pyenv`](https://github.com/pyenv/pyenv)
 * [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv)
 * `bash` v3.1+
 
-(These are probably available as packages for your OS.)
+Also, `pypvutil_ide_vscode` requires these:
+
+* [The `vscode_setting` function][vscode-script] from
+  [this dofiles repo][dotfiles]
+* [`jq`][jq]
+
+(Most of these are probably available as packages for your OS.)
+
+[vscode-script]: https://github.com/ocsw/dotfiles/blob/main/dot.bashrc.d/vscode-setting.post.sh
+[dotfiles]: https://github.com/ocsw/dotfiles
+[jq]: https://github.com/jqlang/jq
 
 ## Configuration
 
