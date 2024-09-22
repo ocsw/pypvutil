@@ -111,7 +111,7 @@ config files).
 The file will be formatted with 4-space indents when setting or unsetting the
 value; to change this, specify '-i|--indent NUM'.
 
-Options can appear in any order.
+Options can appear in any order.  Later options override earlier ones.
 EOF
 }
 
