@@ -50,11 +50,11 @@ _pypvutil_latest_completions () {
 
 _pypvutil_venv_completions () {
     local add="$1"
+    local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ -z "$add" ]; then
         # seems to not be necessary, but just in case...
         COMPREPLY=()
     fi
-    local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     while read -r line; do
         COMPREPLY+=("$line")
     done < <(pypvutil_venvs | grep "^${cur_word}")

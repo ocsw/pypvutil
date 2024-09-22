@@ -56,7 +56,7 @@ _pypvutil_global_complete () {
         if [[ system =~ ^$cur_word ]]; then
             COMPREPLY+=("system")
         fi
-        _pypvutil_all_completions all
+        _pypvutil_all_completions add
     fi
 }
 complete -o default -F _pypvutil_global_complete pypvutil_global
@@ -79,7 +79,7 @@ _pypvutil_local_complete () {
         if [[ --unset =~ ^$cur_word ]]; then
             COMPREPLY+=("--unset")
         fi
-        _pypvutil_all_completions all
+        _pypvutil_all_completions add
     fi
 }
 complete -o default -F _pypvutil_local_complete pypvutil_local
