@@ -218,6 +218,9 @@ _pypvutil_ide_vscode_complete () {
     fi
     if [ "$prev_word" = "-f" ] || [ "$prev_word" = "--file" ]; then
         COMPREPLY=()
+        while read -r line; do
+            COMPREPLY+=("$line")
+        done < <(compgen -o default "$cur_word")
         return 0
     fi
     if [ "$prev_word" = "-i" ] || [ "$prev_word" = "--indent" ]; then
@@ -274,5 +277,5 @@ _pypvutil_ide_vscode_complete () {
         COMPREPLY+=("--help")
     fi
 }
-complete -o default -F _pypvutil_ide_vscode_complete pypvutil_ide_vscode
+complete -F _pypvutil_ide_vscode_complete pypvutil_ide_vscode
 _pypvutil_create_alias "ide_vscode" "yes"
