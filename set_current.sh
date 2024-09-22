@@ -210,14 +210,14 @@ _pypvutil_ide_vscode_complete () {
         prev_word="${COMP_WORDS[$COMP_CWORD-1]}"
     fi
 
+    COMPREPLY=()
+
     if [ "$prev_word" = "-s" ] || [ "$prev_word" = "--set" ]; then
-        COMPREPLY=()
         _pypvutil_all_completions add
         _pypvutil_latest_completions add
         return 0
     fi
     if [ "$prev_word" = "-f" ] || [ "$prev_word" = "--file" ]; then
-        COMPREPLY=()
         while read -r line; do
             COMPREPLY+=("$line")
         done < <(compgen -o default "$cur_word")
