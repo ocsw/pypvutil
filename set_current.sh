@@ -203,8 +203,12 @@ pypvutil_ide_vscode () {
 }
 
 _pypvutil_ide_vscode_complete () {
-    local prev_word="${COMP_WORDS[$COMP_CWORD-1]}"
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
+    local prev_word=""
+
+    if [ "$COMP_CWORD" -ge 1 ]; then
+        prev_word="${COMP_WORDS[$COMP_CWORD-1]}"
+    fi
 
     if [ "$prev_word" = "-s" ] || [ "$prev_word" = "--set" ]; then
         COMPREPLY=()
