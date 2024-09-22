@@ -180,7 +180,10 @@ pypvutil_ide_vscode () {
     fi
 
     if [ "$py_env" = "2" ] || [ "$py_env" = "3" ]; then
-        py_env=$(pypvutil_latest "$py_env" "installed_only")
+        if ! py_env=$(pypvutil_latest "$py_env" "installed_only"); then
+            # pypvutil_latest will have emitted an error message
+            return 1
+        fi
     fi
 
     if [ "$mode" = "get" ]; then

@@ -36,7 +36,10 @@ EOF
         return 1
     fi
     if [ "$py_version" = "2" ] || [ "$py_version" = "3" ]; then
-        py_version=$(pypvutil_latest "$py_version")
+        if ! py_version=$(pypvutil_latest "$py_version"); then
+            # pypvutil_latest will have emitted an error message
+            return 1
+        fi
     fi
     shift
 
@@ -210,7 +213,10 @@ EOF
     fi
 
     if [ "$py_version" = "2" ] || [ "$py_version" = "3" ]; then
-        py_version=$(pypvutil_latest "$py_version" "installed_only")
+        if ! py_version=$(pypvutil_latest "$py_version" "installed_only"); then
+            # pypvutil_latest will have emitted an error message
+            return 1
+        fi
     fi
     full_name="${short_name}-${py_version}"
 
@@ -427,7 +433,10 @@ EOF
     fi
 
     if [ "$py_version" = "2" ] || [ "$py_version" = "3" ]; then
-        py_version=$(pypvutil_latest "$py_version" "installed_only")
+        if ! py_version=$(pypvutil_latest "$py_version" "installed_only"); then
+            # pypvutil_latest will have emitted an error message
+            return 1
+        fi
     fi
     full_name="${package_name}-${py_version}"
 
@@ -513,8 +522,11 @@ EOF
     else
         if [ "$target_py_version" = "2" ] || \
                 [ "$target_py_version" = "3" ]; then
-            target_py_version=$(pypvutil_latest "$target_py_version" \
-                "installed_only")
+            if ! target_py_version=$(pypvutil_latest "$target_py_version" \
+                    "installed_only"); then
+                # pypvutil_latest will have emitted an error message
+                return 1
+            fi
         fi
         if ! pypvutil_name_is_global "$target_py_version"; then
             echo "ERROR: Target Python version not found."

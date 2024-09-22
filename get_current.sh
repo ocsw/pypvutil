@@ -130,6 +130,7 @@ EOF
         fi
     done
 
+    echo "ERROR: No Python environment found for specified major version." 1>&2
     return 1
 }
 
