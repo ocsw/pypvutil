@@ -90,9 +90,9 @@ _pypvutil_ide_vscode_usage () {
     cmd_name=$(_pypvutil_get_cmd_name "ide_vscode")
     cat 1>&2 <<EOF
 Usage:
-    $cmd_name -s|--set PYTHON_ENV [ OPTIONS ]
-    $cmd_name -u|--unset [ OPTIONS ]
-    $cmd_name -g|--get [ OPTIONS ]
+    $cmd_name -s|--set PYTHON_ENV [OPTIONS]
+    $cmd_name -u|--unset [OPTIONS]
+    $cmd_name -g|--get [OPTIONS]
 
 Sets, unsets, or gets the VSCode 'python.defaultInterpreterPath' workspace
 setting.
