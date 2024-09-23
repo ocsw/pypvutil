@@ -97,6 +97,9 @@ Usage:
 Sets, unsets, or gets the VSCode 'python.defaultInterpreterPath' workspace
 setting.
 
+If the settings file does not exist, it will be created (as will the path to
+it).
+
 When setting the value, PYTHON_ENV can be a virtualenv, an installed base
 version, or '2' or '3'.  With '2' or '3', the latest installed Python release
 with that major version will be used.
