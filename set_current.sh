@@ -222,8 +222,8 @@ _pypvutil_ide_vscode_complete () {
             return 0
             ;;
         -f|--file)
-            while read -r line; do
-                COMPREPLY+=("$line")
+            while read -r comp; do
+                COMPREPLY+=("$comp")
             done < <(compgen -o default "$cur_word")
             return 0
             ;;
@@ -234,8 +234,8 @@ _pypvutil_ide_vscode_complete () {
             ;;
     esac
 
-    while read -r line; do
-        COMPREPLY+=("$line")
+    while read -r comp; do
+        COMPREPLY+=("$comp")
     done < <(compgen -W "
             -s --set -u --unset -g --get -f --file -w --workspace -i --indent
             -h --help
