@@ -26,6 +26,8 @@ _pypvutil_base_completions () {
         # seems to not be necessary, but just in case...
         COMPREPLY=()
     fi
+    # don't change this to use compgen because -W gets word splitting applied
+    # to it
     while IFS= read -r line || [ -n "$line" ]; do
         COMPREPLY+=("$line")
     done < <("$ver_func" | grep "^${cur_word}")
@@ -54,6 +56,8 @@ _pypvutil_venv_completions () {
         # seems to not be necessary, but just in case...
         COMPREPLY=()
     fi
+    # don't change this to use compgen because -W gets word splitting applied
+    # to it
     while IFS= read -r line || [ -n "$line" ]; do
         COMPREPLY+=("$line")
     done < <(pypvutil_venvs | grep "^${cur_word}")
