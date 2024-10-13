@@ -199,7 +199,7 @@ EOF
         echo "ERROR: No Python version given."
         return 1
     fi
-    if [ -n "$project_dir" ] && [ ! -d "$project_dir" ]; then
+    if [ -n "$project_dir" ] && ! [ -d "$project_dir" ]; then
         echo "ERROR: Bad project directory."
         return 1
     fi

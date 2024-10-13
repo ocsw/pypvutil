@@ -40,7 +40,7 @@ _pypvutil_reqs () {
         echo "ERROR: No project directory given."
         return 1
     fi
-    if [ ! -d "$project_dir" ]; then
+    if ! [ -d "$project_dir" ]; then
         echo "ERROR: Bad project directory."
         return 1
     fi

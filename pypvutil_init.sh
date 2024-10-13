@@ -18,7 +18,7 @@ if [ -z "$PYPVUTIL_HOME" ]; then
     echo "ERROR: PYPVUTIL_HOME is unset." 1>&2
     return 1
 fi
-if [ ! -d "$PYPVUTIL_HOME" ]; then
+if ! [ -d "$PYPVUTIL_HOME" ]; then
     echo "ERROR: PYPVUTIL_HOME is not a directory." 1>&2
     return 1
 fi
