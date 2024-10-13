@@ -381,9 +381,8 @@ _pypvutil_ln_complete () {
     elif [ "$COMP_CWORD" = "2" ]; then
         while IFS= read -r line; do
             COMPREPLY+=("$line")
-        done < <(pypvutil_bin_ls "${COMP_WORDS[1]}" 2>/dev/null | \
-            grep "^${COMP_WORDS[2]}")
-        [ -n "$line" ] && COMPREPLY+=("$line")
+        done < <(cd "${PYENV_ROOT}/versions/${COMP_WORDS[1]}/bin" && \
+            compgen -G "*")
     fi
 }
 complete -o default -F _pypvutil_ln_complete pypvutil_ln

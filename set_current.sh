@@ -53,9 +53,9 @@ _pypvutil_global_complete () {
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ "$COMP_CWORD" = "1" ]; then
         COMPREPLY=()
-        if [[ system =~ ^$cur_word ]]; then
-            COMPREPLY+=("system")
-        fi
+        while IFS= read -r comp; do
+            COMPREPLY+=("$comp")
+        done < <(compgen -W "system" -- "$cur_word")
         _pypvutil_all_completions add
     fi
 }
@@ -73,12 +73,9 @@ _pypvutil_local_complete () {
     local cur_word="${COMP_WORDS[$COMP_CWORD]}"
     if [ "$COMP_CWORD" = "1" ]; then
         COMPREPLY=()
-        if [[ system =~ ^$cur_word ]]; then
-            COMPREPLY+=("system")
-        fi
-        if [[ --unset =~ ^$cur_word ]]; then
-            COMPREPLY+=("--unset")
-        fi
+        while IFS= read -r comp; do
+            COMPREPLY+=("$comp")
+        done < <(compgen -W "system --unset" -- "$cur_word")
         _pypvutil_all_completions add
     fi
 }
