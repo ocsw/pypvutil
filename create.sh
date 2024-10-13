@@ -379,7 +379,7 @@ _pypvutil_ln_complete () {
     if [ "$COMP_CWORD" = "1" ]; then
         _pypvutil_all_completions
     elif [ "$COMP_CWORD" = "2" ]; then
-        while read -r line; do
+        while IFS= read -r line; do
             COMPREPLY+=("$line")
         done < <(pypvutil_bin_ls "${COMP_WORDS[1]}" 2>/dev/null | \
             grep "^${COMP_WORDS[2]}")

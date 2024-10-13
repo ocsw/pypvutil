@@ -26,7 +26,7 @@ _pypvutil_base_completions () {
         # seems to not be necessary, but just in case...
         COMPREPLY=()
     fi
-    while read -r line; do
+    while IFS= read -r line; do
         COMPREPLY+=("$line")
     done < <("$ver_func" | grep "^${cur_word}")
     [ -n "$line" ] && COMPREPLY+=("$line")
@@ -55,7 +55,7 @@ _pypvutil_venv_completions () {
         # seems to not be necessary, but just in case...
         COMPREPLY=()
     fi
-    while read -r line; do
+    while IFS= read -r line; do
         COMPREPLY+=("$line")
     done < <(pypvutil_venvs | grep "^${cur_word}")
     [ -n "$line" ] && COMPREPLY+=("$line")
