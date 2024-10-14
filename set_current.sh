@@ -111,6 +111,9 @@ config files).
 The file will be formatted with 4-space indents when setting or unsetting the
 value; to change this, specify '-i|--indent NUM'.
 
+When overwriting an existing setting, a warning will be printed to stderr with
+the setting's previous value.  This can be suppressed with -q|--quiet.
+
 Options can appear in any order.  Later options override earlier ones.
 EOF
 }
@@ -122,6 +125,7 @@ pypvutil_ide_vscode () {
     local vsc_settings_file=".vscode/settings.json"
     local workspace_arg=""
     local indent=4
+    local quiet_arg=""
     local new_python_path
 
     while [ "$#" -gt 0 ]; do
@@ -152,6 +156,10 @@ pypvutil_ide_vscode () {
             -i|--indent)
                 indent="$2"
                 shift
+                shift
+                ;;
+            -q|--quiet)
+                quiet_arg="-q"
                 shift
                 ;;
             -h|--help)
@@ -198,6 +206,7 @@ pypvutil_ide_vscode () {
             return 1
         fi
         vscode-setting -f "$vsc_settings_file" $workspace_arg -i "$indent" \
+            $quiet_arg \
             -s "python.defaultInterpreterPath" "$new_python_path"
     fi
 }
@@ -235,7 +244,7 @@ _pypvutil_ide_vscode_complete () {
         COMPREPLY+=("$comp")
     done < <(compgen -W "
             -s --set -u --unset -g --get -f --file -w --workspace -i --indent
-            -h --help
+            -q --quiet -h --help
         " -- "$cur_word")
 }
 complete -F _pypvutil_ide_vscode_complete pypvutil_ide_vscode
