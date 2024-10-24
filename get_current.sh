@@ -65,7 +65,7 @@ pypvutil_name_is_global () {
     local name="$1"
     if [ -z "$name" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "name_is_global")
-        echo "Usage: $cmd_name NAME"
+        printf "%s\n" "Usage: $cmd_name NAME"
         echo
         echo "ERROR: No name given."
         return 1
@@ -79,7 +79,7 @@ pypvutil_name_is_venv () {
     local name="$1"
     if [ -z "$name" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "name_is_venv")
-        echo "Usage: $cmd_name NAME"
+        printf "%s\n" "Usage: $cmd_name NAME"
         echo
         echo "ERROR: No name given."
         return 1
@@ -147,7 +147,7 @@ pypvutil_venv_version () {
     local py_version
     if [ -z "$venv" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "venv_version")
-        echo "Usage: $cmd_name VIRTUALENV"
+        printf "%s\n" "Usage: $cmd_name VIRTUALENV"
         echo
         echo "ERROR: No virtualenv given."
         return 1

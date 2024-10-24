@@ -67,7 +67,7 @@ pypvutil_wrapper () {
 
     if [ -z "$wrapped" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "wrapper")
-        echo "Usage: $cmd_name COMMAND [ARGS]"
+        printf "%s\n" "Usage: $cmd_name COMMAND [ARGS]"
         echo
         echo "ERROR: No command given."
         return 1
@@ -111,13 +111,13 @@ _pypvutil_fix () {
 
     if [ -z "$venv" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "fix")
-        echo "Usage: $cmd_name VIRTUALENV"
+        printf "%s\n" "Usage: $cmd_name VIRTUALENV"
         echo
         echo "ERROR: No virtualenv given."
         return 1
     fi
     if ! pypvutil_venvs | grep "^$venv\$" > /dev/null 2>&1; then
-        echo "ERROR: \"$venv\" is not a valid virtualenv."
+        printf "%s\n" "ERROR: \"$venv\" is not a valid virtualenv."
         return 1
     fi
 
@@ -162,7 +162,7 @@ _pypvutil_create_alias "fix" "yes"
 pypvutil_fix_all () {
     local venv
     for venv in $(pypvutil_venvs); do
-        echo "Fixing virtualenv \"$venv\"..."
+        printf "%s\n" "Fixing virtualenv \"$venv\"..."
         pypvutil_fix "$venv"
     done
     echo "Done."
@@ -356,14 +356,14 @@ EOF
     fi
     if ! [ -d "$target_dir" ]; then
         echo "ERROR: Target directory doesn't exist or isn't a directory."
-        echo "    Target: $target_dir"
+        printf "%s\n" "    Target: $target_dir"
         return 1
     fi
 
     source_path="${PYENV_ROOT}/versions/${py_env}/bin/${exec_name}"
     target_path="${target_dir}/${exec_name}"
     if ln -s "$source_path" "$target_path"; then
-        echo "Symlink \"${target_dir}/${exec_name}\" created."
+        printf "%s\n" "Symlink \"${target_dir}/${exec_name}\" created."
     else
         cat <<EOF
 

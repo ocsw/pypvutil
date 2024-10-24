@@ -31,7 +31,7 @@ _pypvutil_reqs () {
 
     if [ -z "$venv" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "reqs")
-        echo "Usage: $cmd_name VIRTUALENV PROJECT_DIRECTORY"
+        printf "%s\n" "Usage: $cmd_name VIRTUALENV PROJECT_DIRECTORY"
         echo
         echo "ERROR: No virtualenv given."
         return 1
@@ -90,7 +90,7 @@ _pypvutil_pipcopy () {
     local reqs_list
     if [ -z "$source_venv" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "pipcopy")
-        echo "Usage: $cmd_name SOURCE_VIRTUALENV TARGET_VIRTUALENV"
+        printf "%s\n" "Usage: $cmd_name SOURCE_VIRTUALENV TARGET_VIRTUALENV"
         echo
         echo "ERROR: No source virtualenv given."
         return 1
