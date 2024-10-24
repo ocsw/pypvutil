@@ -114,7 +114,7 @@ EOF
 
     # see:
     # https://stackoverflow.com/questions/742466/how-can-i-reverse-the-order-of-lines-in-a-file
-    # https://web.archive.org/web/20090208232311/http://student.northpark.edu/pemente/awk/awk1line.txt
+    # https://web.archive.org/web/20090227054719/http://student.northpark.edu/pemente/awk/awk1line.txt
     versions=$(pyenv install --list | tail -n +2 | sed 's/^..//' | \
         grep "^${major_version}\.[0-9]" | grep -vi "[a-z]" | \
         awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--]}')
