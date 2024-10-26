@@ -125,11 +125,11 @@ _pypvutil_fix () {
     # requires a minor-versioned python binary (e.g. python3.6), which the
     # above doesn't seem to provide (at least for python3).
     py_version=$(grep "^version *= *" \
-        "${PYENV_ROOT}/versions/${venv}/pyvenv.cfg" | \
+        "${PYENV_ROOT}/versions/${venv}/pyvenv.cfg" |
         sed 's/^version *= *//')
-    major=$(printf "%s\n" "$py_version" | \
+    major=$(printf "%s\n" "$py_version" |
         sed 's/^\([0-9]\)\.[0-9]\.[0-9]$/\1/')
-    major_minor=$(printf "%s\n" "$py_version" | \
+    major_minor=$(printf "%s\n" "$py_version" |
         sed 's/^\([0-9]\.[0-9]\)\.[0-9]$/\1/')
     if ! cd "${PYENV_ROOT}/versions/${venv}/bin"; then
         cat << EOF
@@ -203,7 +203,7 @@ EOF
         echo "ERROR: Bad project directory."
         return 1
     fi
-    if [ -n "$project_dir" ] && \
+    if [ -n "$project_dir" ] &&
             ! compgen -G "$project_dir/*requirements*.txt" \
             > /dev/null 2>&1; then
         cat <<EOF
@@ -264,7 +264,7 @@ ERROR: No Python environment given.
 EOF
         return 1
     fi
-    if ! pypvutil_name_is_global "$py_env" && \
+    if ! pypvutil_name_is_global "$py_env" &&
             ! pypvutil_name_is_venv "$py_env"; then
         echo "ERROR: Specified Python environment not found." 1>&2
         return 1
@@ -295,7 +295,7 @@ ERROR: No Python environment given.
 EOF
         return 1
     fi
-    if ! pypvutil_name_is_global "$py_env" && \
+    if ! pypvutil_name_is_global "$py_env" &&
             ! pypvutil_name_is_venv "$py_env"; then
         echo "ERROR: Specified Python environment not found." 1>&2
         return 1
@@ -338,7 +338,7 @@ ERROR: No Python environment given.
 EOF
         return 1
     fi
-    if ! pypvutil_name_is_global "$py_env" && \
+    if ! pypvutil_name_is_global "$py_env" &&
             ! pypvutil_name_is_venv "$py_env"; then
         echo "ERROR: Specified Python environment not found."
         return 1
@@ -381,7 +381,7 @@ _pypvutil_ln_complete () {
     elif [ "$COMP_CWORD" = "2" ]; then
         while IFS= read -r line; do
             COMPREPLY+=("$line")
-        done < <(cd "${PYENV_ROOT}/versions/${COMP_WORDS[1]}/bin" && \
+        done < <(cd "${PYENV_ROOT}/versions/${COMP_WORDS[1]}/bin" &&
             compgen -G "*")
     fi
 }
@@ -519,7 +519,7 @@ EOF
             return 1
         fi
     else
-        if [ "$target_py_version" = "2" ] || \
+        if [ "$target_py_version" = "2" ] ||
                 [ "$target_py_version" = "3" ]; then
             if ! target_py_version=$(pypvutil_latest "$target_py_version" \
                     "installed_only"); then

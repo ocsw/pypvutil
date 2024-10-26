@@ -47,14 +47,14 @@ _pypvutil_create_alias "bases_available" "no"
 pypvutil_bases_installed () {
     # see:
     # https://unix.stackexchange.com/questions/275637/limit-posix-find-to-specific-depth
-    find "${PYENV_ROOT}/versions/." ! -name . -prune -type d | \
+    find "${PYENV_ROOT}/versions/." ! -name . -prune -type d |
         sed "s|^${PYENV_ROOT}/versions/\./||"
 }
 _pypvutil_create_alias "bases_installed" "no"
 
 
 pypvutil_venvs () {
-    pyenv virtualenvs | sed -e 's/^..//' -e 's/ (.*$//' | \
+    pyenv virtualenvs | sed -e 's/^..//' -e 's/ (.*$//' |
         grep -v "/envs/"
 }
 _pypvutil_create_alias "venvs" "no"
@@ -97,7 +97,7 @@ pypvutil_latest () {
     local installed_only="$2"
     local versions ver
 
-    if [ -n "$major_version" ] && [ "$major_version" != "2" ] && \
+    if [ -n "$major_version" ] && [ "$major_version" != "2" ] &&
             [ "$major_version" != "3" ]; then
         cmd_name=$(_pypvutil_get_cmd_name "latest")
         cat <<EOF
@@ -115,8 +115,8 @@ EOF
     # see:
     # https://stackoverflow.com/questions/742466/how-can-i-reverse-the-order-of-lines-in-a-file
     # https://web.archive.org/web/20090227054719/http://student.northpark.edu/pemente/awk/awk1line.txt
-    versions=$(pyenv install --list | tail -n +2 | sed 's/^..//' | \
-        grep "^${major_version}\.[0-9]" | grep -vi "[a-z]" | \
+    versions=$(pyenv install --list | tail -n +2 | sed 's/^..//' |
+        grep "^${major_version}\.[0-9]" | grep -vi "[a-z]" |
         awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--]}')
 
     if [ -z "$installed_only" ]; then
@@ -157,7 +157,7 @@ pypvutil_venv_version () {
         return 1
     fi
 
-    py_version=$(pyenv versions | sed -e 's/^..//' -e 's/ (.*$//' | \
+    py_version=$(pyenv versions | sed -e 's/^..//' -e 's/ (.*$//' |
         grep "/envs/${venv}\$" | grep -v ' --> ' | sed 's|/.*$||')
     if [ -z "$py_version" ]; then
         echo
