@@ -116,7 +116,7 @@ _pypvutil_fix () {
         echo "ERROR: No virtualenv given."
         return 1
     fi
-    if ! pypvutil_venvs | grep "^$venv\$" > /dev/null 2>&1; then
+    if ! pypvutil_venvs | grep "^${venv}\$" > /dev/null 2>&1; then
         printf "%s\n" "ERROR: \"$venv\" is not a valid virtualenv."
         return 1
     fi
