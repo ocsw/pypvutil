@@ -338,15 +338,24 @@ ERROR: No Python environment given.
 EOF
         return 1
     fi
+
     if ! pypvutil_name_is_global "$py_env" &&
             ! pypvutil_name_is_venv "$py_env"; then
         echo "ERROR: Specified Python environment not found."
         return 1
     fi
+
     if [ -z "$exec_name" ]; then
         echo "ERROR: No executable name given."
         return 1
     fi
+    source_path="${PYENV_ROOT}/versions/${py_env}/bin/${exec_name}"
+    if ! [ -e "$source_path" ]; then
+        echo "ERROR: Source executable doesn't exist."
+        printf "%s\n" "    Source: $source_path"
+        return 1
+    fi
+
     if [ -z "$target_dir" ]; then
         if [ -n "$PYPVUTIL_LN_DIR" ]; then
             target_dir="$PYPVUTIL_LN_DIR"
@@ -359,9 +368,8 @@ EOF
         printf "%s\n" "    Target: $target_dir"
         return 1
     fi
-
-    source_path="${PYENV_ROOT}/versions/${py_env}/bin/${exec_name}"
     target_path="${target_dir}/${exec_name}"
+
     if ln -s "$source_path" "$target_path"; then
         printf "%s\n" "Symlink \"${target_dir}/${exec_name}\" created."
     else
